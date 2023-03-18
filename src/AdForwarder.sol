@@ -27,8 +27,8 @@ contract AdForwarder {
         rewardAdTaker();
 
         // emit Ad consumed event
-        // FIMME: maker is contract deployer, taker is msg.sender
-        emit AdConsumed(msg.sender, tx.origin);
+        // FIXME: maker is contract deployer, taker is msg.sender
+        emit AdConsumed(tx.origin, msg.sender);
     }
 
     // function to reward ad taker
