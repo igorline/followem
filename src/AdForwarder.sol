@@ -4,7 +4,7 @@ pragma solidity ^0.7.0;
 // FIXME: Should this be a library instead?
 contract AdForwarder {
     // contract to interract with
-    address public contractAddress;
+    address payable public contractAddress;
     
     // whitelisted addresses
     address[] public whitelist;
@@ -16,11 +16,14 @@ contract AdForwarder {
     event AdConsumed(address indexed _adMaker, address indexed _adTaker);
 
     // TODO: Consider also submitting signed message with response
+    // TODO: Add maker parameter, should be sig, so that you cannot set your own address?
     // function to take ad action
-    function executeAd(bytes calldata _calldata) external {
+    function executeAd(bytes calldata _calldata) external payable {
         // TODO: check func selectors are whitelisted
         // TODO: check msg.sender is whitelisted
 
+        // execute calldata
+        (bool success, bytes memory result) = contractAddress.call{value: msg.value}(_calldata);
         // reward ad maker
         rewardAdMaker();
         // reward ad taker
