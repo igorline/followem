@@ -1,6 +1,12 @@
+pragma solidity ^0.8.15;
+
 contract L2Campaign {
     uint256 public immutable commision;
     mapping(bytes32 => address) claims;
+
+    constructor(uint256 _commision) {
+        commision = _commision;
+    }
 
     function xReceive(
         bytes32 _transferId,
@@ -15,7 +21,7 @@ contract L2Campaign {
         claims[adHash] = _originSender;
     }
 
-    function claim(address minter, uint256 tokenId) public {
+    function claim(address minter, uint256 tokenId) public payable {
         //This campaign only supports hardcoded mint but of course campaign can add more selectors on their behalf
         bytes memory _calldata = abi.encodeWithSignature(
             "mint(address,uint256)",
@@ -34,6 +40,6 @@ contract L2Campaign {
         //Reset claim
         claims[expectedAddHash] = address(0);
 
-        address(msg.sender).transfer(commision);
+        payable(address(msg.sender)).transfer(commision);
     }
 }
