@@ -2,10 +2,12 @@ pragma solidity ^0.8.15;
 
 contract L2Campaign {
     uint256 public immutable commision;
+    address public immutable collection;
     mapping(bytes32 => address) claims;
 
-    constructor(uint256 _commision) {
+    constructor(uint256 _commision, address _collection) {
         commision = _commision;
+        collection = _collection;
     }
 
     function xReceive(
@@ -16,9 +18,11 @@ contract L2Campaign {
         uint32 _origin,
         bytes memory _callData
     ) external returns (bytes memory) {
-        //TODO add proper conversition from bytes to bytes32
-        bytes32 adHash = bytes32(_callData);
-        claims[adHash] = _originSender;
+        (bytes32 adHash, address advertiser) = abi.decode(
+            _callData,
+            (bytes32, address)
+        );
+        claims[adHash] = advertiser;
     }
 
     function claim(address minter, uint256 tokenId) public payable {
@@ -31,17 +35,38 @@ contract L2Campaign {
             tokenId
         );
         //
-        bytes32 calldataHash = keccak256(_calldata);
         //If all params are correcct the hash will equal the one written be xReceive to the claim function. -> claim is authorized
-        bytes32 expectedAddHash = keccak256(
-            abi.encode(address(this), calldataHash, msg.sender)
+        bytes32 expectedAddHash = getAddHash(
+            collection,
+            _calldata,
+            address(this),
+            msg.sender,
+            100
         );
-
         require(claims[expectedAddHash] == msg.sender, "unauthorized");
 
         //A claim can only claime once
         claims[expectedAddHash] = address(0);
         //Send the reward to the sender
         payable(address(msg.sender)).transfer(commision);
+    }
+
+    function getAddHash(
+        address target,
+        bytes memory _calldata,
+        address l2CampaignContract,
+        address adverstiser,
+        uint32 destinationDomain
+    ) private returns (bytes32) {
+        return
+            keccak256(
+                abi.encodePacked(
+                    target,
+                    keccak256(_calldata),
+                    l2CampaignContract,
+                    adverstiser,
+                    destinationDomain
+                )
+            );
     }
 }
