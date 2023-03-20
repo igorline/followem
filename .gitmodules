@@ -9,3 +9,7 @@
 	path = lib/openzeppelin-contracts
 	url = https://github.com/Openzeppelin/openzeppelin-contracts
 	branch = v4.8.2
+[submodule "lib/interfaces"]
+	path = lib/interfaces
+	url = https://github.com/connext/interfaces
+	branch = v2.0.3
