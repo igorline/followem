@@ -22,7 +22,7 @@ contract AdForwarder {
         //the address of the campaignContract
         address l2CampaignContract,
         //The advertiser that should earn the reward
-        address adverstiser,
+        address advertiser,
         //The domain the campain contract is deployed
         uint32 destinationDomain,
         //The relayerFee that needs to be paid to the connext relayer
@@ -35,7 +35,7 @@ contract AdForwarder {
             target,
             _calldata,
             l2CampaignContract,
-            adverstiser,
+            advertiser,
             destinationDomain
         );
 
@@ -46,9 +46,9 @@ contract AdForwarder {
             msg.sender, // _delegate: address that can revert or forceLocal on destination
             0, // _amount: 0 because no funds are being transferred
             0, // _slippage: can be anything between 0-10000 because no funds are being transferred
-            abi.encode(adHash, adverstiser) // _callData: the encoded calldata to send
+            abi.encode(adHash, advertiser) // _callData: the encoded calldata to send
         );
 
-        emit AdExecuted(adHash, adverstiser);
+        emit AdExecuted(adHash, advertiser);
     }
 }
