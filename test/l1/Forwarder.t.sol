@@ -23,6 +23,7 @@ contract ConnextMock {
 contract ForwarderTest is Test {
     AdForwarder public forwarder;
     L2Campaign public campaign;
+    ConnextMock public connextMock;
 
     address target = address(1);
     address minter = address(2);
@@ -35,8 +36,15 @@ contract ForwarderTest is Test {
     event AdExecuted(bytes32 indexed adHash, address indexed advertiser);
 
     function setUp() public {
-        forwarder = new AdForwarder(IConnext(address(new ConnextMock())));
-        campaign = new L2Campaign(comission, target, address(forwarder));
+        connextMock = new ConnextMock();
+        forwarder = new AdForwarder(IConnext(address(connextMock)));
+        campaign = new L2Campaign(
+            comission,
+            target,
+            address(forwarder),
+            address(connextMock),
+            destinationDomain
+        );
         //Campaign is funded with 1 ETH
         vm.deal(address(campaign), 1 ether);
     }
@@ -70,14 +78,15 @@ contract ForwarderTest is Test {
     }
 
     function testClaim() public {
-        vm.prank(address(0));
+        //The connext bridge is allowed to set the write new entries to the campaign contract
+        vm.prank(address(connextMock));
 
         //Pretend that the ad was executed
         campaign.xReceive(
             0x0,
             0,
             address(0),
-            minter,
+            address(forwarder),
             destinationDomain,
             abi.encode(
                 0xcfc594dc74253c11f1cb658aefb5183c42bb9d236010c148927607d3006e4f95,

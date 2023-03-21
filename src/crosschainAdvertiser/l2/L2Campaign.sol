@@ -9,13 +9,35 @@ contract L2Campaign {
     address public immutable target;
     //The address of the forwarder contract
     address public immutable l1Forwarder;
+    //The address of the connext contract
+    address public immutable connext;
+    //The domain the campaign contract is deployed at
+    uint32 public immutable originDomain;
 
     mapping(bytes32 => address) claims;
 
-    constructor(uint256 _commision, address _target, address _l1Forwarder) {
+    constructor(
+        uint256 _commision,
+        address _target,
+        address _l1Forwarder,
+        address _connext,
+        uint32 _originDomain
+    ) {
         commision = _commision;
         target = _target;
         l1Forwarder = _l1Forwarder;
+        connext = _connext;
+        originDomain = _originDomain;
+    }
+
+    modifier onlySource(address _originSender, uint32 _origin) {
+        require(
+            _origin == originDomain &&
+                _originSender == l1Forwarder &&
+                msg.sender == connext,
+            "Expected original caller to be source contract on origin domain and this to be called by Connext"
+        );
+        _;
     }
 
     function xReceive(
@@ -25,8 +47,7 @@ contract L2Campaign {
         address _originSender,
         uint32 _origin,
         bytes memory _callData
-    ) external returns (bytes memory) {
-        //TODO add onlySource modifier to protect against malicious calls
+    ) external onlySource(_originSender, _origin) returns (bytes memory) {
         (bytes32 adHash, address advertiser) = abi.decode(
             _callData,
             (bytes32, address)

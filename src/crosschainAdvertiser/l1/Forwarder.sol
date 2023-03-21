@@ -51,6 +51,4 @@ contract AdForwarder {
 
         emit AdExecuted(adHash, adverstiser);
     }
-
-   
 }
