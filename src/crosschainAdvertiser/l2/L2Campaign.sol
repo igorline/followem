@@ -1,5 +1,7 @@
 pragma solidity ^0.8.15;
 
+import {getAdHash} from "../AdHash.sol";
+
 contract L2Campaign {
     uint256 public immutable commision;
     address public immutable collection;
@@ -36,7 +38,7 @@ contract L2Campaign {
         );
         //
         //If all params are correcct the hash will equal the one written be xReceive to the claim function. -> claim is authorized
-        bytes32 expectedAddHash = getAddHash(
+        bytes32 expectedAddHash = getAdHash(
             collection,
             _calldata,
             address(this),
@@ -49,24 +51,5 @@ contract L2Campaign {
         claims[expectedAddHash] = address(0);
         //Send the reward to the sender
         payable(address(msg.sender)).transfer(commision);
-    }
-
-    function getAddHash(
-        address target,
-        bytes memory _calldata,
-        address l2CampaignContract,
-        address adverstiser,
-        uint32 destinationDomain
-    ) private returns (bytes32) {
-        return
-            keccak256(
-                abi.encodePacked(
-                    target,
-                    keccak256(_calldata),
-                    l2CampaignContract,
-                    adverstiser,
-                    destinationDomain
-                )
-            );
     }
 }

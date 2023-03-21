@@ -3,6 +3,8 @@ pragma solidity ^0.8.15;
 import {IConnext} from "interfaces/core/IConnext.sol";
 import {IXReceiver} from "interfaces/core/IXReceiver.sol";
 
+import {getAdHash} from "../AdHash.sol";
+
 contract AdForwarder {
     IConnext public immutable connext;
 
@@ -29,7 +31,7 @@ contract AdForwarder {
         (bool success, bytes memory result) = target.call(_calldata);
         require(success, "tx failed");
         //Adhash works as an id for the ad
-        bytes32 adHash = getAddHash(
+        bytes32 adHash = getAdHash(
             target,
             _calldata,
             l2CampaignContract,
@@ -50,22 +52,5 @@ contract AdForwarder {
         emit AdExecuted(adHash, adverstiser);
     }
 
-    function getAddHash(
-        address target,
-        bytes memory _calldata,
-        address l2CampaignContract,
-        address adverstiser,
-        uint32 destinationDomain
-    ) private returns (bytes32) {
-        return
-            keccak256(
-                abi.encodePacked(
-                    target,
-                    keccak256(_calldata),
-                    l2CampaignContract,
-                    adverstiser,
-                    destinationDomain
-                )
-            );
-    }
+   
 }
