@@ -36,7 +36,7 @@ contract ForwarderTest is Test {
 
     function setUp() public {
         forwarder = new AdForwarder(IConnext(address(new ConnextMock())));
-        campaign = new L2Campaign(comission, target);
+        campaign = new L2Campaign(comission, target, address(forwarder));
         //Campaign is funded with 1 ETH
         vm.deal(address(campaign), 1 ether);
     }

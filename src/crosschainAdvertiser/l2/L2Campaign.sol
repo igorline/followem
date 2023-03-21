@@ -3,13 +3,19 @@ pragma solidity ^0.8.15;
 import {getAdHash} from "../AdHash.sol";
 
 contract L2Campaign {
+    //The amount an advertiser will receive for a successful ad
     uint256 public immutable commision;
-    address public immutable collection;
+    //The contract the campaign is targeting
+    address public immutable target;
+    //The address of the forwarder contract
+    address public immutable l1Forwarder;
+
     mapping(bytes32 => address) claims;
 
-    constructor(uint256 _commision, address _collection) {
+    constructor(uint256 _commision, address _target, address _l1Forwarder) {
         commision = _commision;
-        collection = _collection;
+        target = _target;
+        l1Forwarder = _l1Forwarder;
     }
 
     function xReceive(
@@ -20,6 +26,7 @@ contract L2Campaign {
         uint32 _origin,
         bytes memory _callData
     ) external returns (bytes memory) {
+        //TODO add onlySource modifier to protect against malicious calls
         (bytes32 adHash, address advertiser) = abi.decode(
             _callData,
             (bytes32, address)
@@ -36,10 +43,9 @@ contract L2Campaign {
             minter,
             tokenId
         );
-        //
         //If all params are correcct the hash will equal the one written be xReceive to the claim function. -> claim is authorized
         bytes32 expectedAddHash = getAdHash(
-            collection,
+            target,
             _calldata,
             address(this),
             msg.sender,
