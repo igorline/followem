@@ -1,4 +1,5 @@
 import { Box, Image, Flex, Text, Button } from "@chakra-ui/react";
+import { useAd } from "../../hooks/useAd";
 
 export interface Ape {
   tokenId: number;
@@ -7,6 +8,8 @@ export interface Ape {
 }
 
 export const ApeTile = ({ ape }: { ape: Ape }) => {
+  const { executeAd } = useAd();
+  const onMint = () => executeAd();
   return (
     <Box>
       <Text fontSize="2xl" fontWeight="bold">
@@ -25,7 +28,7 @@ export const ApeTile = ({ ape }: { ape: Ape }) => {
         >
           <Text>{JSON.stringify(ape.traits)}</Text>
           <Text>Ref: Igor.eth</Text>
-          <Button>Mint 0.08 ETH</Button>
+          <Button onClick={onMint}>Mint 0.08 ETH</Button>
         </Flex>
       </Flex>
     </Box>
