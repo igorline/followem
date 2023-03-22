@@ -8,6 +8,8 @@ import { mainnet, polygon, optimism, arbitrum, gnosis } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import { Home } from "./views/home/Home";
+import MintPage from "./views/mint/MintPage";
+import { ChakraProvider } from "@chakra-ui/react";
 
 const { chains, provider } = configureChains([goerli, polygon, optimism, gnosis], [alchemyProvider({ apiKey: process.env.ALCHEMY_ID! }), publicProvider()]);
 
@@ -26,7 +28,9 @@ function App() {
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains}>
-        <Home />
+        <ChakraProvider>
+          <MintPage />
+        </ChakraProvider>
       </RainbowKitProvider>
     </WagmiConfig>
   );
