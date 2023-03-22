@@ -31,16 +31,13 @@ contract L2CampaignFactory {
 
     function deployCampaign(
         uint256 _commission,
-        address _target
+        address _target,
+        uint256 _deadline
     ) external payable {
-        require(
-            msg.value >= _commission,
-            "Commission cannot be less than total reward added"
-        );
-
         L2Campaign campaign = new L2Campaign{value: msg.value}(
             _commission,
             _target,
+            _deadline,
             l1Forwarder,
             connext,
             originDomain

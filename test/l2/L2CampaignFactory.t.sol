@@ -46,7 +46,8 @@ contract CampaignFactoryTest is Test {
 
         campaignFactory.deployCampaign{value: totalReward}(
             commission,
-            target
+            target,
+            0
         );
 
         assertEq(address(campaign).balance, totalReward);
