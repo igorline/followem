@@ -15,7 +15,7 @@ contract CampaignFactoryTest is Test {
     uint32 destinationDomain = 100;
     uint256 commission = 1 wei;
     
-    event CampaignCreated(address indexed target, address indexed author, uint256 commission);
+    event CampaignCreated(address indexed target, address indexed author, uint256 commission, uint256 totalReward);
 
     function setUp() public {
         campaignFactory = new L2CampaignFactory(
@@ -26,10 +26,12 @@ contract CampaignFactoryTest is Test {
     }
 
     function testDeployCampaign() public {
-        vm.expectEmit(true, true, false, true);
-        emit CampaignCreated(target, address(this), commission);
+        uint totalReward = 1 ether;
 
-        campaignFactory.deployCampaign(
+        vm.expectEmit(true, true, false, true);
+        emit CampaignCreated(target, address(this), commission, totalReward);
+
+        campaignFactory.deployCampaign{value: totalReward}(
             commission,
             target
         );

@@ -11,7 +11,7 @@ contract L2CampaignFactory {
     uint32 public immutable originDomain;
 
     // Event for new campaign created
-    event CampaignCreated(address indexed target, address indexed author, uint256 commission);
+    event CampaignCreated(address indexed target, address indexed author, uint256 commission, uint256 totalReward);
 
     constructor(
         address _l1Forwarder,
@@ -23,11 +23,12 @@ contract L2CampaignFactory {
         originDomain = _originDomain;
     }
 
-    // TODO: Should be payable
     function deployCampaign(
         uint256 _commission,
         address _target
-    ) external {
+    ) external payable {
+        require(msg.value >= _commission, "Commission cannot be less than total reward added");
+
         new L2Campaign(
             _commission,
             _target,
@@ -36,6 +37,6 @@ contract L2CampaignFactory {
             originDomain
         );
 
-        emit CampaignCreated(_target, msg.sender, _commission);
+        emit CampaignCreated(_target, msg.sender, _commission, msg.value);
     } 
 }
