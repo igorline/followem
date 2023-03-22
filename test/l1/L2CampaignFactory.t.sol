@@ -14,6 +14,8 @@ contract CampaignFactoryTest is Test {
 
     uint32 destinationDomain = 100;
     uint256 commission = 1 wei;
+    
+    event CampaignCreated(address indexed target, address indexed author, uint256 commission);
 
     function setUp() public {
         campaignFactory = new L2CampaignFactory(
@@ -24,10 +26,12 @@ contract CampaignFactoryTest is Test {
     }
 
     function testDeployCampaign() public {
-        address campaign = campaignFactory.deployCampaign(
+        vm.expectEmit(true, true, false, true);
+        emit CampaignCreated(target, address(this), commission);
+
+        campaignFactory.deployCampaign(
             commission,
             target
         );
-        assertEq(campaign, address(0x104fBc016F4bb334D775a19E8A6510109AC63E00));
     }
 }
