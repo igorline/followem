@@ -4,7 +4,7 @@ import {getAdHash} from "../AdHash.sol";
 
 contract L2Campaign {
     //The amount an advertiser will receive for a successful ad
-    uint256 public immutable commision;
+    uint256 public immutable commission;
     //The contract the campaign is targeting
     address public immutable target;
     //The address of the forwarder contract
@@ -17,13 +17,13 @@ contract L2Campaign {
     mapping(bytes32 => address) claims;
 
     constructor(
-        uint256 _commision,
+        uint256 _commission,
         address _target,
         address _l1Forwarder,
         address _connext,
         uint32 _originDomain
     ) {
-        commision = _commision;
+        commission = _commission;
         target = _target;
         l1Forwarder = _l1Forwarder;
         connext = _connext;
@@ -77,6 +77,6 @@ contract L2Campaign {
         //A claim can only claime once
         claims[expectedAddHash] = address(0);
         //Send the reward to the sender
-        payable(address(msg.sender)).transfer(commision);
+        payable(address(msg.sender)).transfer(commission);
     }
 }
