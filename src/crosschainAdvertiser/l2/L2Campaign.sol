@@ -64,9 +64,9 @@ contract L2Campaign {
     }
 
     function xReceive(
-        bytes32 _transferId,
-        uint256 _amount, // TODO: ignore
-        address _asset, // TODO: ignore
+        bytes32, // _transferId
+        uint256, // _amount
+        address, //  _asset
         address _originSender,
         uint32 _origin,
         bytes memory _callData

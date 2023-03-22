@@ -5,15 +5,17 @@ import {IConnext} from "interfaces/core/IConnext.sol";
 import "forge-std/Test.sol";
 import "../../src/crosschainAdvertiser/l1/Forwarder.sol";
 import "../../src/crosschainAdvertiser/l2/L2Campaign.sol";
+import "../../src/crosschainAdvertiser/IBoredApeYachtClub.sol";
+import "../../src/crosschainAdvertiser/l1/NFTMint.sol";
 
 contract ConnextMock {
     function xcall(
-        uint32 destinationDomain,
-        address target,
-        address to,
-        address from,
-        uint256 value,
-        uint256 gasLimit,
+        uint32, // destinationDomain
+        address, // target
+        address, // to
+        address, // from
+        uint256, // value
+        uint256, // gasLimit
         bytes calldata data
     ) external payable returns (bytes memory) {
         return data;
@@ -24,8 +26,9 @@ contract ForwarderTest is Test {
     AdForwarder public forwarder;
     L2Campaign public campaign;
     ConnextMock public connextMock;
+    IBoredApeYachtClub public bayc;
+    NFTMint public nftMint;
 
-    address target = address(1);
     address minter = address(2);
     address advertiser = address(3);
 
@@ -37,10 +40,18 @@ contract ForwarderTest is Test {
 
     function setUp() public {
         connextMock = new ConnextMock();
+        address baycAddress = deployCode("BoredApeYachtClub.sol", abi.encode("BAYC", "BAYC", 1000, 0));
+        bayc = IBoredApeYachtClub(baycAddress);
+        bayc.flipSaleState();
+        nftMint = new NFTMint();
         forwarder = new AdForwarder(IConnext(address(connextMock)));
+
+        bytes4 sig = bytes4(keccak256(bytes("mintApe(uint256)")));
+        forwarder.setHandler(sig, address(0), address(nftMint));
+
         campaign = new L2Campaign{value: 1 ether}(
             commission,
-            target,
+            address(bayc),
             0,
             address(forwarder),
             address(connextMock),
@@ -48,25 +59,34 @@ contract ForwarderTest is Test {
         );
     }
 
+    function testGetHandler() public {
+        bytes4 sig = bytes4(keccak256(bytes("mintApe(uint256)")));
+        forwarder.setHandler(sig, address(0), address(1));
+        forwarder.setHandler(sig, address(4), address(2));
+        assertEq(address(forwarder.getHandler(sig, address(4))), address(2));
+        assertEq(address(forwarder.getHandler(sig, address(1))), address(1));
+    }
+
     function testForward() public {
         bytes memory _calldata = abi.encodeWithSignature(
-            "mint(address,uint256)",
-            minter,
-            0
+            "mintApe(uint256)",
+            1
         );
 
         vm.deal(minter, 1 ether);
         vm.startPrank(minter);
 
-        bytes memory callData = abi.encode(_calldata);
         vm.expectEmit(true, true, false, false);
         emit AdExecuted(
-            0xcfc594dc74253c11f1cb658aefb5183c42bb9d236010c148927607d3006e4f95,
+            0x481bc0d6a970ed8dbb8465c9e02f156980387f0a6a2693525e2fffc81cfb9944,
             advertiser
         );
 
-        forwarder.executeAd{value: 1 wei}(
-            target,
+        assertEq(bayc.balanceOf(address(this)), 0);
+        assertEq(bayc.balanceOf(address(forwarder)), 0);
+
+        forwarder.executeAd{value: 1 ether}(
+            address(bayc),
             _calldata,
             address(campaign),
             advertiser,
@@ -74,6 +94,8 @@ contract ForwarderTest is Test {
             relayerFee
         );
         vm.stopPrank();
-    }
 
+        assertEq(bayc.balanceOf(minter), 1);
+        assertEq(bayc.balanceOf(address(forwarder)), 0);
+    }
 }
