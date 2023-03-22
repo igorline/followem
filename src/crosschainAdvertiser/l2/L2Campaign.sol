@@ -22,7 +22,7 @@ contract L2Campaign {
         address _l1Forwarder,
         address _connext,
         uint32 _originDomain
-    ) {
+    ) payable {
         commission = _commission;
         target = _target;
         l1Forwarder = _l1Forwarder;
