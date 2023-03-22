@@ -1,15 +1,13 @@
-import React from "react";
-import logo from "./logo.svg";
-import "./App.css";
-import "@rainbow-me/rainbowkit/styles.css";
+import { ChakraProvider } from "@chakra-ui/react";
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import "@rainbow-me/rainbowkit/styles.css";
+import { RouterProvider } from "react-router";
 import { configureChains, createClient, goerli, WagmiConfig } from "wagmi";
-import { mainnet, polygon, optimism, arbitrum, gnosis } from "wagmi/chains";
+import { gnosis, optimism, polygon } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
-import { Home } from "./views/home/Home";
-import MintPage from "./views/mint/MintPage";
-import { ChakraProvider } from "@chakra-ui/react";
+import "./App.css";
+import { getRouter } from "./router/getRouter";
 
 const { chains, provider } = configureChains([goerli, polygon, optimism, gnosis], [alchemyProvider({ apiKey: process.env.ALCHEMY_ID! }), publicProvider()]);
 
@@ -29,7 +27,7 @@ function App() {
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains}>
         <ChakraProvider>
-          <MintPage />
+          <RouterProvider router={getRouter()} />
         </ChakraProvider>
       </RainbowKitProvider>
     </WagmiConfig>
