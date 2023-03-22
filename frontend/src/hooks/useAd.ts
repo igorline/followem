@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { useAccount, useProvider, useSigner } from "wagmi";
+import { useSigner } from "wagmi";
 //THE BAYC CONTRACT deployed on goerli
 
 const forwarderContract = "0x0";
