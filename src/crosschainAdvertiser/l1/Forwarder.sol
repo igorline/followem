@@ -1,5 +1,8 @@
 pragma solidity ^0.8.15;
 
+import "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
+import "openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
+
 import {IConnext} from "interfaces/core/IConnext.sol";
 import {IXReceiver} from "interfaces/core/IXReceiver.sol";
 
@@ -48,6 +51,12 @@ contract AdForwarder {
             0, // _slippage: can be anything between 0-10000 because no funds are being transferred
             abi.encode(adHash, advertiser) // _callData: the encoded calldata to send
         );
+        //Hardcoded transfer for now
+        uint tokenId = IERC721Enumerable(target).tokenOfOwnerByIndex(
+            msg.sender,
+            0
+        );
+        IERC721(target).safeTransferFrom(address(this), msg.sender, tokenId);
 
         emit AdExecuted(adHash, advertiser);
     }
