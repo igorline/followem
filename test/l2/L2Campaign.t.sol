@@ -33,9 +33,17 @@ contract L2CampaignTest is Test {
         vm.prank(connextAddress);
         
         bytes memory _calldata = abi.encodeWithSignature(
-            "mint(address,uint256)",
+            "mintApe(uint256)",
             minter,
             0
+        );
+
+        bytes32 expectedAdHash = getAdHash(
+            target,
+            _calldata,
+            address(campaign),
+            advertiser,
+            destinationDomain
         );
 
         //Pretend that the ad was executed
@@ -46,20 +54,14 @@ contract L2CampaignTest is Test {
             forwarderAddress,
             destinationDomain,
             abi.encode(
-                getAdHash(
-                    target,
-                    _calldata,
-                    address(campaign),
-                    advertiser,
-                    destinationDomain
-                ),
+                expectedAdHash,
                 advertiser
             )
         );
 
         vm.prank(advertiser);
         uint balanceBefore = address(advertiser).balance;
-        campaign.claim(minter, 0);
+        campaign.claim(expectedAdHash);
         uint balanceAfter = address(advertiser).balance;
         //Advertiser claimed his commission of 1 wei after he prooved that the minter minted token 0 on his behalf
         assert(balanceAfter == balanceBefore + commission);
