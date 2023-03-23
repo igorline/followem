@@ -1,6 +1,7 @@
 pragma solidity ^0.8.15;
 
 import {getAdHash} from "../AdHash.sol";
+import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
 contract L2Campaign {
     // The amount an advertiser will receive for a successful ad
@@ -18,8 +19,13 @@ contract L2Campaign {
     // Deadline after which the owner can withdraw the funds
     uint256 public immutable deadline;
 
+    mapping (address advertiser => bytes32 agreement) public agreements;
+
     mapping(bytes32 => address) claims;
+
     uint public claimableRewards;
+
+    using ECDSA for bytes32;
 
     constructor(
         uint256 _commission,
@@ -71,12 +77,35 @@ contract L2Campaign {
         uint32 _origin,
         bytes memory _callData
     ) external onlySource(_originSender, _origin) returns (bytes memory) {
-        (bytes32 adHash, address advertiser) = abi.decode(
+        (bytes32 adHash, address advertiser, bytes32 signature) = abi.decode(
             _callData,
-            (bytes32, address)
+            (bytes32, address, bytes32)
+        );
+        // TODO: Will relayer keep retrying if this fails?
+        // What if tx will never succeed?
+        require(
+            agreements[advertiser] == signature,
+            "Advertiser did not apply for this campaign"
         );
         claims[adHash] = advertiser;
         claimableRewards += commission;
+    }
+
+    function applyTo(bytes memory signature) external payable {
+        require(
+            msg.value >= commission,
+            "Payment cannot be less than commission"
+        );
+        // TODO: return extra funds
+        require(
+            agreements[msg.sender] == 0x0,
+            "Advertiser already applied for this campaign"
+        );
+        require(
+            keccak256(abi.encodePacked(target, msg.sender)).toEthSignedMessageHash().recover(signature) == msg.sender,
+            "Signature is not valid"
+        );
+        agreements[msg.sender] = abi.encodePacked(signature);
     }
 
     function withdraw() external onlyOwner onlyAfter(deadline) {
