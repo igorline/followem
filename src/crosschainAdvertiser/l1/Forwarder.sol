@@ -1,4 +1,6 @@
-pragma solidity ^0.8.15;
+pragma solidity ^0.8.19;
+
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 import {IConnext} from "interfaces/core/IConnext.sol";
 import {IXReceiver} from "interfaces/core/IXReceiver.sol";
@@ -6,7 +8,7 @@ import {IXReceiver} from "interfaces/core/IXReceiver.sol";
 import {getAdHash} from "../AdHash.sol";
 import {ICompleteAd} from "../ICompleteAd.sol";
 
-contract AdForwarder {
+contract AdForwarder is Ownable {
     IConnext public immutable connext;
 
     // here we can have generic func selector or specific to contract
@@ -89,7 +91,7 @@ contract AdForwarder {
     }
 
     // TODO: Check whether supports interface
-    function setHandler(bytes4 selector, address contractAddress, address handler) external {
+    function setHandler(bytes4 selector, address contractAddress, address handler) external onlyOwner {
         // TODO: Add owner role
         bytes24 b = getSig(selector, contractAddress);
         router[b] = handler;

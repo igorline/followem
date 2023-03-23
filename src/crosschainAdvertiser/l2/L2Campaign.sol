@@ -1,8 +1,9 @@
 pragma solidity ^0.8.15;
 
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import {getAdHash} from "../AdHash.sol";
 
-contract L2Campaign {
+contract L2Campaign is Ownable {
     // The amount an advertiser will receive for a successful ad
     uint256 public immutable commission;
     // The contract the campaign is targeting
@@ -13,8 +14,6 @@ contract L2Campaign {
     address public immutable connext;
     // The domain the campaign contract is deployed at
     uint32 public immutable originDomain;
-    // Owner of the campaign
-    address public immutable owner;
     // Deadline after which the owner can withdraw the funds
     uint256 public immutable deadline;
 
@@ -40,7 +39,6 @@ contract L2Campaign {
         connext = _connext;
         originDomain = _originDomain;
         deadline = _deadline;
-        owner = msg.sender;
     }
 
     modifier onlySource(address _originSender, uint32 _origin) {
@@ -50,11 +48,6 @@ contract L2Campaign {
                 msg.sender == connext,
             "Expected original caller to be source contract on origin domain and this to be called by Connext"
         );
-        _;
-    }
-
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only owner can call this function");
         _;
     }
 
