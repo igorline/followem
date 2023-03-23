@@ -1,6 +1,6 @@
 pragma solidity ^0.8.15;
 
-import { L2Campaign } from "./L2Campaign.sol";
+import {L2Campaign} from "./L2Campaign.sol";
 
 contract L2CampaignFactory {
     // The address of the forwarder contract
@@ -11,13 +11,15 @@ contract L2CampaignFactory {
     uint32 public immutable originDomain;
 
     // Event for new campaign created
-    event CampaignCreated(address indexed target, address indexed author, uint256 commission, uint256 totalReward);
+    event CampaignCreated(
+        address indexed campaign,
+        address indexed target,
+        address indexed author,
+        uint256 commission,
+        uint256 totalReward
+    );
 
-    constructor(
-        address _l1Forwarder,
-        address _connext,
-        uint32 _originDomain
-    ) {
+    constructor(address _l1Forwarder, address _connext, uint32 _originDomain) {
         l1Forwarder = _l1Forwarder;
         connext = _connext;
         originDomain = _originDomain;
@@ -27,9 +29,12 @@ contract L2CampaignFactory {
         uint256 _commission,
         address _target
     ) external payable {
-        require(msg.value >= _commission, "Commission cannot be less than total reward added");
+        require(
+            msg.value >= _commission,
+            "Commission cannot be less than total reward added"
+        );
 
-        new L2Campaign(
+        L2Campaign campaign = new L2Campaign(
             _commission,
             _target,
             l1Forwarder,
@@ -37,6 +42,12 @@ contract L2CampaignFactory {
             originDomain
         );
 
-        emit CampaignCreated(_target, msg.sender, _commission, msg.value);
-    } 
+        emit CampaignCreated(
+            address(campaign),
+            _target,
+            msg.sender,
+            _commission,
+            msg.value
+        );
+    }
 }
