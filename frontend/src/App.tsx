@@ -3,13 +3,16 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { RouterProvider } from "react-router";
 import { configureChains, createClient, goerli, WagmiConfig } from "wagmi";
-import { gnosis, optimism, polygon } from "wagmi/chains";
+import { gnosis, gnosisChiado, optimism, optimismGoerli, polygon } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import "./App.css";
 import { getRouter } from "./router/getRouter";
 
-const { chains, provider } = configureChains([goerli, polygon, optimism, gnosis], [alchemyProvider({ apiKey: process.env.ALCHEMY_ID! }), publicProvider()]);
+const { chains, provider } = configureChains(
+  [goerli, polygon, optimismGoerli, gnosisChiado],
+  [alchemyProvider({ apiKey: process.env.ALCHEMY_ID! }), publicProvider()]
+);
 
 const { connectors } = getDefaultWallets({
   appName: "My RainbowKit App",

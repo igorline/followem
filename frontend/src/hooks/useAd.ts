@@ -1,9 +1,9 @@
 import { ethers } from "ethers";
 import { useSigner } from "wagmi";
+import { BAYC } from "../contracts";
 //THE BAYC CONTRACT deployed on goerli
 
 const forwarderContract = "0x0";
-const target = "0xb1e5c3f7898e46277eefafa0e8732760e07ffe21";
 const l2campaignContract = "0x0";
 const advertiser = "0x0";
 //optimism goerli
@@ -26,7 +26,7 @@ export const useAd = () => {
       signer!
     );
 
-    await contract.executeAd(target, relayerFee, calldata, l2campaignContract, advertiser, destinationDomain, {
+    await contract.executeAd(BAYC, relayerFee, calldata, l2campaignContract, advertiser, destinationDomain, {
       value: relayerFee,
     });
   };
