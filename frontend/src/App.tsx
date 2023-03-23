@@ -3,7 +3,7 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import "@rainbow-me/rainbowkit/styles.css";
 import { RouterProvider } from "react-router";
 import { configureChains, createClient, goerli, WagmiConfig } from "wagmi";
-import { gnosis, gnosisChiado, optimism, optimismGoerli, polygon } from "wagmi/chains";
+import { gnosisChiado, optimismGoerli, polygon } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import "./App.css";
