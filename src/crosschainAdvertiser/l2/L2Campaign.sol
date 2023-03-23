@@ -80,23 +80,9 @@ contract L2Campaign is Ownable {
         payable(address(msg.sender)).transfer((address(this).balance) - claimableRewards);
     }
 
-    function claim(address minter, uint256 tokenId) public payable {
-        // This campaign only supports hardcoded mint but of course campaign can add more selectors on their behalf
-        // In order to claim his reward the advertiser needs to specify which tokenId he wan'ts to claim a reward for.
-        // If this is true the calldata will be exactly the same as the one called be the user
-        bytes memory _calldata = abi.encodeWithSignature(
-            "mint(address,uint256)",
-            minter,
-            tokenId
-        );
+    // TODO: Implement batch claim
+    function claim(bytes32 expectedAdHash) public payable {
         // If all params are correcct the hash will equal the one written be xReceive to the claim function. -> claim is authorized
-        bytes32 expectedAdHash = getAdHash(
-            target,
-            _calldata,
-            address(this),
-            msg.sender,
-            100
-        );
         require(claims[expectedAdHash] == msg.sender, "unauthorized");
 
         // A claim can only claime once
