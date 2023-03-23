@@ -21,6 +21,5 @@ contract DeployL2CampaignFactory is Script {
         vm.stopBroadcast();
     }
 }
-//forge script script/L2CampaignFactory.s.sol:DeployL2CampaignFactory --broadcast --verify --rpc-url {$OPTIMISM_GOERLI_RPC_URL} --chain optimism-goerli
-//forge verify-contract 0xda9a8fc4a398a6c3fc3deadcfdcdf3c36bfd0e68 L2CampaignFactory --watch
-//https://goerli-optimism.etherscan.io/address/0xda9a8fc4a398a6c3fc3deadcfdcdf3c36bfd0e68
+//forge script script/L2CampaignFactory.s.sol:DeployL2CampaignFactory --broadcast --verify --rpc-url {$OPTIMISM_GOERLI_RPC_URL} --etherscan-api-key {$ETHERSCAN_OPTIMISM_GOERLI_API_KEY} -- --network--optimism-goerli
+//forge verify-contract 0xCf0200e25c618C5Ae14534F6fb3335c97BdfeDF8 L2CampaignFactory --watch

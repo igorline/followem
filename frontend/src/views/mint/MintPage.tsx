@@ -1,4 +1,4 @@
-import { Box, Heading, Text } from "@chakra-ui/react";
+import { Box, Heading } from "@chakra-ui/react";
 import { Header } from "../../components/Header/Header";
 import Apes from "./Apes.json";
 import { ApeTile } from "./ApeTile";
