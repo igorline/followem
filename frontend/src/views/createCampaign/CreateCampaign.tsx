@@ -9,12 +9,13 @@ export const CreateCampaign = () => {
   const { deployCampaign } = useCreateCampaign();
 
   const onCreateCampaign = async () => {
-    const comission = ethers.utils.parseEther("0.00001");
-    const target = BAYC;
-    const totalReward = ethers.utils.parseEther("0.001");
-
-    await deployCampaign(comission, target, totalReward);
+    await deployCampaign(ethers.utils.parseEther(commision), target, ethers.utils.parseEther(totalReward));
   };
+
+  const [target, setTarget] = useState<string>(BAYC);
+  const [commision, setCommision] = useState<string>("0.00001");
+  const [totalReward, setTotalReward] = useState<string>("0.001");
+
   const [date, setDate] = useState(new Date());
   return (
     <Box>
@@ -24,7 +25,7 @@ export const CreateCampaign = () => {
         <Box p="4" pt="16">
           <Box>
             <Text>Specifiy advertised Contract</Text>
-            <Input type="text" placeholder="0x..." />
+            <Input value={target} onChange={(e) => setTarget(e.target.value)} type="text" placeholder="" />
           </Box>
           <Box h="4" />
           <Box>
@@ -36,12 +37,12 @@ export const CreateCampaign = () => {
           <Box h="4" />
           <Box>
             <Text>User aquision Reward in ETH</Text>
-            <Input type="text" placeholder="" />
+            <Input value={commision} onChange={(e) => setCommision(e.target.value)} type="text" placeholder="0x..." />
           </Box>
           <Box h="4" />
           <Box>
             <Text>Total reward in ETH</Text>
-            <Input type="text" placeholder="" />
+            <Input value={totalReward} onChange={(e) => setTotalReward(e.target.value)} type="text" placeholder="0x..." />
           </Box>
           <Box>
             <Text>Deadline</Text>
