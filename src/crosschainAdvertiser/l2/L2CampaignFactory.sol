@@ -12,9 +12,9 @@ contract L2CampaignFactory {
 
     // Event for new campaign created
     event CampaignCreated(
-        address indexed campaign,
         address indexed target,
         address indexed author,
+        address campaign,
         uint256 commission,
         uint256 totalReward
     );
@@ -27,27 +27,24 @@ contract L2CampaignFactory {
 
     function deployCampaign(
         uint256 _commission,
-        address _target
+        address _target,
+        uint256 _deadline
     ) external payable {
-        require(
-            msg.value >= _commission,
-            "Commission cannot be less than total reward added"
-        );
-
-        L2Campaign campaign = new L2Campaign(
+        L2Campaign campaign = new L2Campaign{value: msg.value}(
             _commission,
             _target,
+            _deadline,
             l1Forwarder,
             connext,
             originDomain
         );
 
         emit CampaignCreated(
-            address(campaign),
             _target,
             msg.sender,
+            address(campaign),
             _commission,
             msg.value
         );
-    }
+    } 
 }

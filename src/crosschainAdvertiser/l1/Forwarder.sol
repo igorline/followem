@@ -1,4 +1,6 @@
-pragma solidity ^0.8.15;
+pragma solidity ^0.8.19;
+
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 
 import "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import "openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
@@ -7,9 +9,15 @@ import {IConnext} from "interfaces/core/IConnext.sol";
 import {IXReceiver} from "interfaces/core/IXReceiver.sol";
 
 import {getAdHash} from "../AdHash.sol";
+import {ICompleteAd} from "../ICompleteAd.sol";
 
-contract AdForwarder {
+contract AdForwarder is Ownable {
     IConnext public immutable connext;
+
+    // here we can have generic func selector or specific to contract
+    // generic: 0xABCDEF00...00
+    // specific: 0xABCDEF12...99
+    mapping(bytes24 selector => address handler) public router; 
 
     constructor(IConnext _connext) {
         connext = _connext;
@@ -18,22 +26,22 @@ contract AdForwarder {
     event AdExecuted(bytes32 indexed adHash, address indexed advertiser);
 
     function executeAd(
-        //the address of the contract the calldata should be exectuted at
+        // the address of the contract the calldata should be exectuted at
         address target,
-        //The actual transaction calldata
+        // The actual transaction calldata
         bytes calldata _calldata,
-        //the address of the campaignContract
+        // the address of the campaignContract
         address l2CampaignContract,
-        //The advertiser that should earn the reward
+        // The advertiser that should earn the reward
         address advertiser,
-        //The domain the campain contract is deployed
+        // The domain the campain contract is deployed
         uint32 destinationDomain,
-        //The relayerFee that needs to be paid to the connext relayer
+        // The relayerFee that needs to be paid to the connext relayer
         uint256 relayerFee
     ) external payable {
-        (bool success, bytes memory result) = target.call(_calldata);
+        (bool success, bytes memory result) = target.call{value: msg.value - relayerFee}(_calldata);
         require(success, "tx failed");
-        //Adhash works as an id for the ad
+        // Adhash works as an id for the ad
         bytes32 adHash = getAdHash(
             target,
             _calldata,
@@ -58,6 +66,44 @@ contract AdForwarder {
         );
         IERC721(target).safeTransferFrom(address(this), msg.sender, tokenId);
 
+        // getting selector from calldata
+        bytes4 selector = bytes4(_calldata);
+
+        address handler = getHandler(selector, target);
+
+        // TODO: Reason about possible change of those signatures
+        // TODO: Another issue is the need to be able to receive some tokens or implement specfiic interfaces here
+        (bool _success, bytes memory _result) = address(handler).delegatecall(abi.encodeWithSignature("completeAd(address)", target));
+        // TODO: require success
+        
         emit AdExecuted(adHash, advertiser);
+    }
+
+    
+    // FIXME: Should it just be supportsInterface?
+    function onERC721Received(address, address, uint256, bytes memory) public pure returns (bytes4) {
+        return this.onERC721Received.selector;
+    }
+
+    function getSig(bytes4 selector, address target) internal pure returns (bytes24) {
+        return bytes24(uint192(uint32(selector)) << 160 | uint160(target));
+    }
+
+    function getHandler(bytes4 selector, address target) public view returns (address) {
+        bytes24 b = getSig(selector, target);
+        if (router[b] == address(0)) {
+            b = getSig(selector, address(0));
+        }
+        // TODO: handle not found case
+
+        return router[b];
+    }
+
+    // TODO: Check whether supports interface
+    function setHandler(bytes4 selector, address contractAddress, address handler) external onlyOwner {
+        // TODO: Add owner role
+        bytes24 b = getSig(selector, contractAddress);
+        router[b] = handler;
+        // TODO: Add event for new project type added
     }
 }
