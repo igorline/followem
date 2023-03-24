@@ -5,7 +5,7 @@ import { useGetCampaigns } from "../../hooks/useGetCampaigns";
 import { CampaignTile } from "./CampaignTile";
 
 export const AllCampaigns = () => {
-  const { campaigns } = useGetCampaigns();
+  const { campaigns, names } = useGetCampaigns();
 
   return (
     <Box>
@@ -13,8 +13,8 @@ export const AllCampaigns = () => {
       <Box px="8rem">
         <Heading>All Campaigns</Heading>
         <Box p="4" pt="16"></Box>
-        {campaigns.map((campaign) => (
-          <CampaignTile campaign={campaign} />
+        {campaigns.map((campaign, index) => (
+          <CampaignTile campaign={campaign} title={names[index]} />
         ))}
       </Box>
     </Box>
