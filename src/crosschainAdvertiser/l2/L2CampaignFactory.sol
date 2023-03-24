@@ -50,5 +50,5 @@ contract L2CampaignFactory {
             _commission,
             msg.value
         );
-    } 
+    }
 }

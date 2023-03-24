@@ -1,4 +1,5 @@
 import { Box, Image, Flex, Text, Button } from "@chakra-ui/react";
+import { ethers } from "ethers";
 import { useAd } from "../../hooks/useAd";
 
 export interface Ape {
@@ -9,7 +10,7 @@ export interface Ape {
 
 export const ApeTile = ({ ape }: { ape: Ape }) => {
   const { executeAd } = useAd();
-  const onMint = () => executeAd();
+  const onMint = () => executeAd(ethers.utils.parseEther("0.08"));
   return (
     <Box borderRadius="20px" p="4rem" background="radial-gradient(104.26% 162.52% at 1.71% 2.96%, #F7F5F6 64.06%, #F7E3D2 100%)">
       <Text align="center" fontSize="4xl" fontWeight="900">
