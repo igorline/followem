@@ -3,6 +3,7 @@ pragma solidity ^0.8.15;
 
 import "forge-std/Script.sol";
 import "../src/crosschainAdvertiser/l1/Forwarder.sol";
+import "../src/crosschainAdvertiser/l1/ERC721Forwarder.sol";
 import {IConnext} from "interfaces/core/IConnext.sol";
 
 contract DeployForwarder is Script {
@@ -13,6 +14,13 @@ contract DeployForwarder is Script {
         vm.startBroadcast(deployerPrivateKey);
 
         AdForwarder forwarder = new AdForwarder(IConnext(connextGoerli));
+
+        // deploy erc721 forwarder
+        ERC721Forwarder erc721Forwarder = new ERC721Forwarder();
+
+        // add handler for minting Apes
+        bytes4 mintApe = bytes4(keccak256(bytes("mintApe(uint256)")));
+        forwarder.setHandler(mintApe, address(0), address(erc721Forwarder));
 
         vm.stopBroadcast();
     }
