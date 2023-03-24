@@ -16,6 +16,9 @@ contract DeployBAYC is Script {
             0
         );
 
+        // start the sale
+        nft.flipSaleState();
+
         vm.stopBroadcast();
     }
 }
