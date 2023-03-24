@@ -6,7 +6,7 @@ import "forge-std/Test.sol";
 import "../../src/crosschainAdvertiser/l1/Forwarder.sol";
 import "../../src/crosschainAdvertiser/l2/L2Campaign.sol";
 import "../../src/crosschainAdvertiser/IBoredApeYachtClub.sol";
-import "../../src/crosschainAdvertiser/l1/NFTMint.sol";
+import "../../src/crosschainAdvertiser/l1/ERC721Forwarder.sol";
 
 contract ConnextMock {
     function xcall(
@@ -27,7 +27,7 @@ contract ForwarderTest is Test {
     L2Campaign public campaign;
     ConnextMock public connextMock;
     IBoredApeYachtClub public bayc;
-    NFTMint public nftMint;
+    ERC721Forwarder public erc721Forwarder;
 
     address minter = address(2);
     address advertiser = address(3);
@@ -43,11 +43,11 @@ contract ForwarderTest is Test {
         address baycAddress = deployCode("BoredApeYachtClub.sol", abi.encode("BAYC", "BAYC", 1000, 0));
         bayc = IBoredApeYachtClub(baycAddress);
         bayc.flipSaleState();
-        nftMint = new NFTMint();
+        erc721Forwarder = new ERC721Forwarder();
         forwarder = new AdForwarder(IConnext(address(connextMock)));
 
         bytes4 sig = bytes4(keccak256(bytes("mintApe(uint256)")));
-        forwarder.setHandler(sig, address(0), address(nftMint));
+        forwarder.setHandler(sig, address(0), address(erc721Forwarder));
 
         campaign = new L2Campaign{value: 1 ether}(
             commission,
