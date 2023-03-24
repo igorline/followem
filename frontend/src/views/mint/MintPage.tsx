@@ -9,7 +9,6 @@ const MintPage = () => {
     <Box>
       <Header />
       <Box px="8rem">
-        <Heading>Mint Page</Heading>
         <Box p="4" pt="16">
           <ApeTile ape={Apes.collection[0]} />
         </Box>
