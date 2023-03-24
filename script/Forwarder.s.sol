@@ -19,4 +19,4 @@ contract DeployForwarder is Script {
 }
 //forge script script/Forwarder.s.sol:DeployForwarder --broadcast --verify --rpc-url {$GOERLI_RPC_URL}
 
-//https://goerli.etherscan.io/address/0xcf0200e25c618c5ae14534f6fb3335c97bdfedf8
+//https://goerli.etherscan.io/address/0xe076ba8bfbde4074cd99694558ba77b60fef5c21

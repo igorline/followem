@@ -5,10 +5,14 @@ import { L2CampaingFactory } from "../contracts";
 export const useCreateCampaign = () => {
   const { data: signer } = useSigner();
 
-  const deployCampaign = async (commision: BigNumber, target: string, totalReward: BigNumber) => {
-    const contract = new ethers.Contract(L2CampaingFactory, ["function deployCampaign(uint256 _commission,address _target) external payable"], signer!);
+  const deployCampaign = async (commision: BigNumber, target: string, deadline: BigNumber, totalReward: BigNumber) => {
+    const contract = new ethers.Contract(
+      L2CampaingFactory,
+      ["function deployCampaign(uint256 _commission,address _target,uint256 _deadline) external payable"],
+      signer!
+    );
 
-    const deployRes = await contract.deployCampaign(commision, target, { value: totalReward });
+    const deployRes = await contract.deployCampaign(commision, target, deadline, { value: totalReward });
     console.log("deployRes", deployRes);
   };
 
