@@ -1,8 +1,9 @@
 import { ethers } from "ethers";
 import { Result } from "ethers/lib/utils.js";
 import { useEffect, useState } from "react";
-import { useBlockNumber, useProvider } from "wagmi";
+import { useProvider } from "wagmi";
 import { L2CampaingFactory } from "../contracts";
+import { useGetMetadata } from "./useGetMetadata";
 
 export const useGetCampaigns = () => {
   const provider = useProvider();
@@ -12,7 +13,9 @@ export const useGetCampaigns = () => {
     const fetchEvents = async () => {
       const contract = new ethers.Contract(
         L2CampaingFactory,
-        ["event CampaignCreated(address indexed campaign,address indexed target,address indexed author,uint256 commission,uint256 totalReward);"],
+        [
+          "event CampaignCreated(address indexed target,address indexed author,address campaign,uint256 commission,uint256 totalReward);",
+        ],
         provider!
       );
       //We're going to query the last 100000 blocks
@@ -25,5 +28,6 @@ export const useGetCampaigns = () => {
     fetchEvents();
   }, [provider]);
 
-  return { campaigns };
+  const names = useGetMetadata(campaigns);
+  return { campaigns, names };
 };
