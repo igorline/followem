@@ -1,6 +1,6 @@
 import { Box, Button, Heading, Input, Select, Text } from "@chakra-ui/react";
 import { SingleDatepicker } from "chakra-dayzed-datepicker";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { useState } from "react";
 import { Header } from "../../components/Header/Header";
 import { BAYC } from "../../contracts";
@@ -9,7 +9,7 @@ export const CreateCampaign = () => {
   const { deployCampaign } = useCreateCampaign();
 
   const onCreateCampaign = async () => {
-    await deployCampaign(ethers.utils.parseEther(commision), target, ethers.utils.parseEther(totalReward));
+    await deployCampaign(ethers.utils.parseEther(commision), target, BigNumber.from(date.getTime() * 2), ethers.utils.parseEther(totalReward));
   };
 
   const [target, setTarget] = useState<string>(BAYC);
@@ -37,12 +37,12 @@ export const CreateCampaign = () => {
           <Box h="4" />
           <Box>
             <Text>User aquision Reward in ETH</Text>
-            <Input value={commision} onChange={(e) => setCommision(e.target.value)} type="text" placeholder="0x..." />
+            <Input value={commision} onChange={(e) => setCommision(e.target.value)} type="number" placeholder="0x..." />
           </Box>
           <Box h="4" />
           <Box>
             <Text>Total reward in ETH</Text>
-            <Input value={totalReward} onChange={(e) => setTotalReward(e.target.value)} type="text" placeholder="0x..." />
+            <Input value={totalReward} onChange={(e) => setTotalReward(e.target.value)} type="number" placeholder="0x..." />
           </Box>
           <Box>
             <Text>Deadline</Text>

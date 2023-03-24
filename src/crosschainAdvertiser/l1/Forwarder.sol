@@ -1,6 +1,6 @@
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.15;
 
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
 import "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import "openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
@@ -17,7 +17,7 @@ contract AdForwarder is Ownable {
     // here we can have generic func selector or specific to contract
     // generic: 0xABCDEF00...00
     // specific: 0xABCDEF12...99
-    mapping(bytes24 selector => address handler) public router; 
+    mapping(bytes24 selector => address handler) public router;
 
     constructor(IConnext _connext) {
         connext = _connext;
@@ -39,7 +39,9 @@ contract AdForwarder is Ownable {
         // The relayerFee that needs to be paid to the connext relayer
         uint256 relayerFee
     ) external payable {
-        (bool success, bytes memory result) = target.call{value: msg.value - relayerFee}(_calldata);
+        (bool success, bytes memory result) = target.call{
+            value: msg.value - relayerFee
+        }(_calldata);
         require(success, "tx failed");
         // Adhash works as an id for the ad
         bytes32 adHash = getAdHash(
@@ -52,19 +54,13 @@ contract AdForwarder is Ownable {
 
         connext.xcall{value: relayerFee}(
             destinationDomain, // _destination: domain ID of the destination chain
-            target, // _to: address of the target contract (Pong)
+            l2CampaignContract, // _to: address of the target contract (Pong)
             address(0), // _asset: use address zero for 0-value transfers
             msg.sender, // _delegate: address that can revert or forceLocal on destination
             0, // _amount: 0 because no funds are being transferred
             0, // _slippage: can be anything between 0-10000 because no funds are being transferred
             abi.encode(adHash, advertiser) // _callData: the encoded calldata to send
         );
-        //Hardcoded transfer for now
-        uint tokenId = IERC721Enumerable(target).tokenOfOwnerByIndex(
-            msg.sender,
-            0
-        );
-        IERC721(target).safeTransferFrom(address(this), msg.sender, tokenId);
 
         // getting selector from calldata
         bytes4 selector = bytes4(_calldata);
@@ -73,23 +69,35 @@ contract AdForwarder is Ownable {
 
         // TODO: Reason about possible change of those signatures
         // TODO: Another issue is the need to be able to receive some tokens or implement specfiic interfaces here
-        (bool _success, bytes memory _result) = address(handler).delegatecall(abi.encodeWithSignature("completeAd(address)", target));
+        (bool _success, bytes memory _result) = address(handler).delegatecall(
+            abi.encodeWithSignature("completeAd(address)", target)
+        );
         // TODO: require success
-        
+
         emit AdExecuted(adHash, advertiser);
     }
 
-    
     // FIXME: Should it just be supportsInterface?
-    function onERC721Received(address, address, uint256, bytes memory) public pure returns (bytes4) {
+    function onERC721Received(
+        address,
+        address,
+        uint256,
+        bytes memory
+    ) public pure returns (bytes4) {
         return this.onERC721Received.selector;
     }
 
-    function getSig(bytes4 selector, address target) internal pure returns (bytes24) {
-        return bytes24(uint192(uint32(selector)) << 160 | uint160(target));
+    function getSig(
+        bytes4 selector,
+        address target
+    ) internal pure returns (bytes24) {
+        return bytes24((uint192(uint32(selector)) << 160) | uint160(target));
     }
 
-    function getHandler(bytes4 selector, address target) public view returns (address) {
+    function getHandler(
+        bytes4 selector,
+        address target
+    ) public view returns (address) {
         bytes24 b = getSig(selector, target);
         if (router[b] == address(0)) {
             b = getSig(selector, address(0));
@@ -100,7 +108,11 @@ contract AdForwarder is Ownable {
     }
 
     // TODO: Check whether supports interface
-    function setHandler(bytes4 selector, address contractAddress, address handler) external onlyOwner {
+    function setHandler(
+        bytes4 selector,
+        address contractAddress,
+        address handler
+    ) external onlyOwner {
         // TODO: Add owner role
         bytes24 b = getSig(selector, contractAddress);
         router[b] = handler;
