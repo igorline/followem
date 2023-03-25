@@ -8,7 +8,7 @@ export const LastMinterSection = () => {
 
   return (
     <Box px="2rem" py="1rem" borderRadius="20px" background="#F7F5F6">
-      <Text textAlign="center" fontSize="xl">
+      <Text fontWeight="bold" textAlign="center" fontSize="xl">
         Latest mints:
       </Text>
       <Box>
@@ -38,7 +38,7 @@ const LatestMinterRow = ({ to, txHash, blockNr }: { to: any; txHash: any; blockN
           {blockNr}
           <Box w="2" />
 
-          <ExternalLinkIcon color="black" onClick={goToEtherscan} />
+          <ExternalLinkIcon cursor="pointer" color="black" onClick={goToEtherscan} />
         </Flex>
       </Flex>
       <Divider orientation="horizontal" color="grey" />
