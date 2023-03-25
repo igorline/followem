@@ -6,6 +6,8 @@ import "forge-std/Test.sol";
 import "../../src/crosschainAdvertiser/l1/Forwarder.sol";
 import "../../src/crosschainAdvertiser/l2/L2Campaign.sol";
 import "../../src/crosschainAdvertiser/IBoredApeYachtClub.sol";
+import "../../src/crosschainAdvertiser/ICrosschainHandler.sol";
+import "../../src/crosschainAdvertiser/l1/ConnextHandler.sol";
 import "../../src/crosschainAdvertiser/l1/ERC721Forwarder.sol";
 
 contract ConnextMock {
@@ -25,26 +27,30 @@ contract ConnextMock {
 contract ForwarderTest is Test {
     AdForwarder public forwarder;
     L2Campaign public campaign;
-    ConnextMock public connextMock;
+    address public connextMockAddress;
     IBoredApeYachtClub public bayc;
     ERC721Forwarder public erc721Forwarder;
+    ICrosschainHandler public crosschainHandler;
 
     address minter = address(2);
     address advertiser = address(3);
 
-    uint32 destinationDomain = 100;
+    uint32 chainId = 5;
     uint256 relayerFee = 1 wei;
     uint256 commission = 1 wei;
 
-    event AdConsumed(address indexed target, address indexed adMaker, address indexed adTaker, address campaign);
+    event AdConsumed(address indexed target, address indexed adMaker, address indexed adTaker, address campaign, uint32 chainId);
 
     function setUp() public {
-        connextMock = new ConnextMock();
+        ConnextMock connextMock = new ConnextMock();
+        connextMockAddress = address(connextMock);
         address baycAddress = deployCode("BoredApeYachtClub.sol", abi.encode("BAYC", "BAYC", 1000, 0));
         bayc = IBoredApeYachtClub(baycAddress);
         bayc.flipSaleState();
         erc721Forwarder = new ERC721Forwarder();
-        forwarder = new AdForwarder(IConnext(address(connextMock)));
+        forwarder = new AdForwarder();
+        crosschainHandler = new ConnextHandler(IConnext(connextMockAddress), address(forwarder));
+        forwarder.setCrosschainHandler(crosschainHandler);
 
         bytes4 sig = bytes4(keccak256(bytes("mintApe(uint256)")));
         forwarder.setHandler(sig, address(0), address(erc721Forwarder));
@@ -54,8 +60,8 @@ contract ForwarderTest is Test {
             address(bayc),
             0,
             address(forwarder),
-            address(connextMock),
-            destinationDomain
+            connextMockAddress,
+            chainId
         );
     }
 
@@ -81,18 +87,19 @@ contract ForwarderTest is Test {
             address(bayc),
             advertiser,
             address(this),
-            address(campaign)
+            address(campaign),
+            chainId
         );
 
         assertEq(bayc.balanceOf(address(this)), 0);
         assertEq(bayc.balanceOf(address(forwarder)), 0);
 
-        forwarder.executeAd{value: 1 ether}(
+        forwarder.consumeAd{value: 1 ether}(
             address(bayc),
             _calldata,
             address(campaign),
             advertiser,
-            destinationDomain,
+            chainId,
             relayerFee
         );
         vm.stopPrank();

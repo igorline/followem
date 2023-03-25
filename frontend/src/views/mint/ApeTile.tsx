@@ -10,8 +10,8 @@ export interface Ape {
 }
 
 export const ApeTile = ({ ape }: { ape: Ape }) => {
-  const { executeAd } = useAd();
-  const onMint = () => executeAd(ethers.utils.parseEther("0.08"));
+  const { consumeAd } = useAd();
+  const onMint = () => consumeAd(ethers.utils.parseEther("0.08"));
   return (
     <Box>
       <Text align="center" fontSize="4xl" fontWeight="900">
@@ -34,7 +34,10 @@ export const ApeTile = ({ ape }: { ape: Ape }) => {
         <Image src={ape.image} maxW="50%" />
         <Box w="4rem" />
         <Flex direction="column" justify="space-between">
-          <Text>The Bored Ape Yacht Club is a collection of 10,000 unique Bored Ape NFTs— unique digital collectibles living on the Ethereum blockchain.</Text>
+          <Text>
+            The Bored Ape Yacht Club is a collection of 10,000 unique Bored Ape
+            NFTs— unique digital collectibles living on the Ethereum blockchain.
+          </Text>
           <Flex>
             <Text fontWeight="bold" alignItems="start." textAlign="start">
               32 Minted |

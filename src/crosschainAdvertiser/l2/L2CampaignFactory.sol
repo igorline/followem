@@ -1,10 +1,11 @@
 pragma solidity ^0.8.15;
 
 import {L2Campaign} from "./L2Campaign.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 
-contract L2CampaignFactory {
-    // The address of the forwarder contract
-    address public immutable l1Forwarder;
+contract L2CampaignFactory is Ownable {
+    // The address of the caller contract
+    address public l1Caller;
     // The address of the connext contract
     address public immutable connext;
     // The domain the campaign contract is deployed at
@@ -19,10 +20,14 @@ contract L2CampaignFactory {
         uint256 totalReward
     );
 
-    constructor(address _l1Forwarder, address _connext, uint32 _originDomain) {
-        l1Forwarder = _l1Forwarder;
+    constructor(address _l1Caller, address _connext, uint32 _originDomain) {
+        l1Caller = _l1Caller;
         connext = _connext;
         originDomain = _originDomain;
+    }
+
+    function setL1Caller(address newCaller) external onlyOwner {
+        l1Caller = newCaller;
     }
 
     function deployCampaign(
@@ -34,7 +39,7 @@ contract L2CampaignFactory {
             _commission,
             _target,
             _deadline,
-            l1Forwarder,
+            l1Caller,
             connext,
             originDomain
         );
