@@ -1,7 +1,8 @@
-import { Box, Image, Flex, Text, Button } from "@chakra-ui/react";
+import { Box, Image, Flex, Text, Button, Circle } from "@chakra-ui/react";
 import { ethers } from "ethers";
 import { useAd } from "../../hooks/useAd";
-
+import Blockies from "react-blockies";
+import { Advertiser } from "../../contracts";
 export interface Ape {
   tokenId: number;
   image: string;
@@ -12,13 +13,21 @@ export const ApeTile = ({ ape }: { ape: Ape }) => {
   const { executeAd } = useAd();
   const onMint = () => executeAd(ethers.utils.parseEther("0.08"));
   return (
-    <Box borderRadius="20px" p="4rem" background="radial-gradient(104.26% 162.52% at 1.71% 2.96%, #F7F5F6 64.06%, #F7E3D2 100%)">
+    <Box>
       <Text align="center" fontSize="4xl" fontWeight="900">
         Bored Ape Yacht Club
       </Text>
-      <Text fontFamily="satoshi" align="center">
-        Ref: {}
-      </Text>
+      <Flex justifyContent="space-around">
+        <Flex alignItems="center">
+          <Text>Ref: </Text>
+          <Box w="2" />
+          <Blockies className="identicon-circle" seed={Advertiser} />
+          <Box w="2" />
+          <Text fontFamily="satoshi" align="center">
+            {Advertiser.slice(0, 6)}...{Advertiser.slice(-4)}
+          </Text>
+        </Flex>
+      </Flex>
       <Box h="2rem" />
 
       <Flex>
@@ -39,6 +48,7 @@ export const ApeTile = ({ ape }: { ape: Ape }) => {
           Mint 0.08 ETH
         </Button>
       </Flex>
+      <Box h="4rem" />
     </Box>
   );
 };
