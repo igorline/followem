@@ -32,29 +32,32 @@ contract AdForwarder is Ownable {
         // The relayerFee that needs to be paid to the relayer
         uint256 relayerFee
     ) external payable {
-        (bool success, bytes memory result) = target.call{
+        // 1. Call target with calldata
+        (bool successTarget, bytes memory res1) = target.call{
             value: msg.value - relayerFee
         }(_calldata);
-        require(success, "tx failed");
+        require(successTarget, "target tx failed");
 
-        crosschainHandler.doCall{value: relayerFee}(
-            l2CampaignContract,
-            advertiser,
-            chainId
-        );
-
+        // 2. Call post ad complete function
         // getting selector from calldata
         bytes4 selector = bytes4(_calldata);
-
         address handler = getHandler(selector, target);
 
         // TODO: Reason about possible change of those signatures
         // TODO: Another issue is the need to be able to receive some tokens or implement specfiic interfaces here
-        (bool _success, bytes memory _result) = address(handler).delegatecall(
+        (bool successHandler, bytes memory res2) = address(handler).delegatecall(
             abi.encodeWithSignature("completeAd(address)", target)
         );
-        // TODO: require success
+        require(successHandler, "handler tx failed");
 
+        // 3. Call crosschain handler to unlock reward to advertiser
+        crosschainHandler.doCall{value: relayerFee}(
+            l2CampaignContract,
+            abi.encode(selector, advertiser),
+            chainId
+        );
+
+        // 4. Emit event
         emit AdConsumed(target, advertiser, msg.sender, l2CampaignContract, chainId);
     }
 

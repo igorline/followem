@@ -16,6 +16,8 @@ contract L2Campaign is Ownable {
     uint32 public immutable originDomain;
     // Deadline after which the owner can withdraw the funds
     uint256 public immutable deadline;
+    // Selector for the xReceive function
+    bytes4 public immutable selector;
 
     mapping(address => uint32) public claimableRewards;
     uint32 totalRewards;
@@ -26,7 +28,8 @@ contract L2Campaign is Ownable {
         uint256 _deadline,
         address _l1Forwarder,
         address _connext,
-        uint32 _originDomain
+        uint32 _originDomain,
+        bytes4 _selector
     ) payable {
         require(
             msg.value >= _commission,
@@ -39,6 +42,7 @@ contract L2Campaign is Ownable {
         connext = _connext;
         originDomain = _originDomain;
         deadline = _deadline;
+        selector = _selector;
     }
 
     modifier onlySource(address _originSender, uint32 _origin) {
@@ -64,10 +68,11 @@ contract L2Campaign is Ownable {
         uint32 _origin,
         bytes memory _callData
     ) external onlySource(_originSender, _origin) returns (bytes memory) {
-        address advertiser = abi.decode(
+        (bytes4 _selector, address advertiser) = abi.decode(
             _callData,
-            (address)
+            (bytes4, address)
         );
+        require(_selector == selector, "Invalid selector");
         ++claimableRewards[advertiser];
         ++totalRewards;
     }

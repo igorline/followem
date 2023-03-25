@@ -10,10 +10,11 @@ export const CreateCampaign = () => {
   const { deployCampaign } = useCreateCampaign();
 
   const onCreateCampaign = async () => {
-    await deployCampaign(ethers.utils.parseEther(commision), target, BigNumber.from(date.getTime() * 2), ethers.utils.parseEther(totalReward));
+    await deployCampaign(ethers.utils.parseEther(commision), target, BigNumber.from(date.getTime() * 2), ethers.utils.parseEther(totalReward), signature);
   };
 
   const [target, setTarget] = useState<string>(BAYC);
+  const [signature, setSignature] = useState<string>("mintApe(uint256)");
   const [commision, setCommision] = useState<string>("0.00001");
   const [totalReward, setTotalReward] = useState<string>("0.001");
 
@@ -35,6 +36,11 @@ export const CreateCampaign = () => {
             <Select backgroundColor="white">
               <option>NFT</option>
             </Select>
+          </Box>
+          <Box h="4" />
+          <Box>
+            <Text>Function signature</Text>
+            <Input backgroundColor="white" value={signature} onChange={(e) => setSignature(e.target.value)} type="text" placeholder="" />
           </Box>
           <Box h="4" />
           <Box>
