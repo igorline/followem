@@ -8,7 +8,6 @@ import "openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Enumerab
 import {IConnext} from "interfaces/core/IConnext.sol";
 import {IXReceiver} from "interfaces/core/IXReceiver.sol";
 
-import {getAdHash} from "../AdHash.sol";
 import {ICompleteAd} from "../ICompleteAd.sol";
 
 contract AdForwarder is Ownable {
@@ -23,7 +22,7 @@ contract AdForwarder is Ownable {
         connext = _connext;
     }
 
-    event AdExecuted(bytes32 indexed adHash, address indexed advertiser);
+    event AdConsumed(address indexed target, address indexed adMaker, address indexed adTaker, address campaign);
 
     function executeAd(
         // the address of the contract the calldata should be exectuted at
@@ -43,14 +42,6 @@ contract AdForwarder is Ownable {
             value: msg.value - relayerFee
         }(_calldata);
         require(success, "tx failed");
-        // Adhash works as an id for the ad
-        bytes32 adHash = getAdHash(
-            target,
-            _calldata,
-            l2CampaignContract,
-            advertiser,
-            destinationDomain
-        );
 
         connext.xcall{value: relayerFee}(
             destinationDomain, // _destination: domain ID of the destination chain
@@ -59,7 +50,7 @@ contract AdForwarder is Ownable {
             msg.sender, // _delegate: address that can revert or forceLocal on destination
             0, // _amount: 0 because no funds are being transferred
             0, // _slippage: can be anything between 0-10000 because no funds are being transferred
-            abi.encode(adHash, advertiser) // _callData: the encoded calldata to send
+            abi.encode(advertiser) // _callData: the encoded calldata to send
         );
 
         // getting selector from calldata
@@ -74,7 +65,7 @@ contract AdForwarder is Ownable {
         );
         // TODO: require success
 
-        emit AdExecuted(adHash, advertiser);
+        emit AdConsumed(target, advertiser, msg.sender, l2CampaignContract);
     }
 
     // FIXME: Should it just be supportsInterface?
