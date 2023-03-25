@@ -4,14 +4,14 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { color } from "framer-motion";
 import { RouterProvider } from "react-router";
 import { configureChains, createClient, goerli, WagmiConfig } from "wagmi";
-import { gnosisChiado, optimismGoerli, polygon } from "wagmi/chains";
+import { gnosisChiado, optimismGoerli, polygon, polygonMumbai } from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 import "./App.css";
 import { getRouter } from "./router/getRouter";
 
 const { chains, provider } = configureChains(
-  [goerli, polygon, optimismGoerli, gnosisChiado],
+  [goerli, polygonMumbai, optimismGoerli, gnosisChiado],
   [alchemyProvider({ apiKey: process.env.ALCHEMY_ID! }), publicProvider()]
 );
 
