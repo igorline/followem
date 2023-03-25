@@ -11,8 +11,12 @@ import "./App.css";
 import { getRouter } from "./router/getRouter";
 
 const { chains, provider } = configureChains(
-  [goerli, polygonMumbai, optimismGoerli, gnosisChiado],
-  [alchemyProvider({ apiKey: process.env.ALCHEMY_ID! }), publicProvider()]
+  [goerli, polygonMumbai, optimismGoerli],
+  [
+    alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_ID! }),
+    alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_ID! }),
+    alchemyProvider({ apiKey: process.env.REACT_APP_ALCHEMY_ID! }),
+  ]
 );
 
 const { connectors } = getDefaultWallets({
