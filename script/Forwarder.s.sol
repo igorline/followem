@@ -4,6 +4,7 @@ pragma solidity ^0.8.15;
 import "forge-std/Script.sol";
 import "../src/crosschainAdvertiser/l1/Forwarder.sol";
 import "../src/crosschainAdvertiser/l1/ERC721Forwarder.sol";
+import "../src/crosschainAdvertiser/l1/ConnextHandler.sol";
 import {IConnext} from "interfaces/core/IConnext.sol";
 
 contract DeployForwarder is Script {
@@ -13,7 +14,9 @@ contract DeployForwarder is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         vm.startBroadcast(deployerPrivateKey);
 
-        AdForwarder forwarder = new AdForwarder(IConnext(connextGoerli));
+        AdForwarder forwarder = new AdForwarder();
+        ConnextHandler crosschainHandler = new ConnextHandler(IConnext(connextGoerli), address(forwarder));
+        forwarder.setCrosschainHandler(crosschainHandler);
 
         // deploy erc721 forwarder
         ERC721Forwarder erc721Forwarder = new ERC721Forwarder();

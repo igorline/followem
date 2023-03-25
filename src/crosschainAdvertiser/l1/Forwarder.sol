@@ -5,26 +5,20 @@ import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import "openzeppelin-contracts/contracts/token/ERC721/IERC721.sol";
 import "openzeppelin-contracts/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 
-import {IConnext} from "interfaces/core/IConnext.sol";
-import {IXReceiver} from "interfaces/core/IXReceiver.sol";
-
 import {ICompleteAd} from "../ICompleteAd.sol";
+import {ICrosschainHandler} from "../ICrosschainHandler.sol";
 
 contract AdForwarder is Ownable {
-    IConnext public immutable connext;
+    ICrosschainHandler public crosschainHandler;
 
     // here we can have generic func selector or specific to contract
     // generic: 0xABCDEF00...00
     // specific: 0xABCDEF12...99
     mapping(bytes24 selector => address handler) public router;
 
-    constructor(IConnext _connext) {
-        connext = _connext;
-    }
+    event AdConsumed(address indexed target, address indexed adMaker, address indexed adTaker, address campaign, uint32 chainId);
 
-    event AdConsumed(address indexed target, address indexed adMaker, address indexed adTaker, address campaign);
-
-    function executeAd(
+    function consumeAd(
         // the address of the contract the calldata should be exectuted at
         address target,
         // The actual transaction calldata
@@ -33,9 +27,9 @@ contract AdForwarder is Ownable {
         address l2CampaignContract,
         // The advertiser that should earn the reward
         address advertiser,
-        // The domain the campain contract is deployed
-        uint32 destinationDomain,
-        // The relayerFee that needs to be paid to the connext relayer
+        // The chain id for campaign contract
+        uint32 chainId,
+        // The relayerFee that needs to be paid to the relayer
         uint256 relayerFee
     ) external payable {
         (bool success, bytes memory result) = target.call{
@@ -43,14 +37,10 @@ contract AdForwarder is Ownable {
         }(_calldata);
         require(success, "tx failed");
 
-        connext.xcall{value: relayerFee}(
-            destinationDomain, // _destination: domain ID of the destination chain
-            l2CampaignContract, // _to: address of the target contract (Pong)
-            address(0), // _asset: use address zero for 0-value transfers
-            msg.sender, // _delegate: address that can revert or forceLocal on destination
-            0, // _amount: 0 because no funds are being transferred
-            0, // _slippage: can be anything between 0-10000 because no funds are being transferred
-            abi.encode(advertiser) // _callData: the encoded calldata to send
+        crosschainHandler.doCall{value: relayerFee}(
+            l2CampaignContract,
+            advertiser,
+            chainId
         );
 
         // getting selector from calldata
@@ -65,7 +55,7 @@ contract AdForwarder is Ownable {
         );
         // TODO: require success
 
-        emit AdConsumed(target, advertiser, msg.sender, l2CampaignContract);
+        emit AdConsumed(target, advertiser, msg.sender, l2CampaignContract, chainId);
     }
 
     // FIXME: Should it just be supportsInterface?
@@ -96,6 +86,10 @@ contract AdForwarder is Ownable {
         // TODO: handle not found case
 
         return router[b];
+    }
+
+    function setCrosschainHandler(ICrosschainHandler _crosschainHandler) external onlyOwner {
+        crosschainHandler = _crosschainHandler;
     }
 
     // TODO: Check whether supports interface
