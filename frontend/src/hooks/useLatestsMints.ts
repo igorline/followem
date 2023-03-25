@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { Result } from "ethers/lib/utils.js";
 import { useEffect, useState } from "react";
 import { useProvider } from "wagmi";
-import { BAYC } from "../contracts";
+import { BAYC, L1Forwarder } from "../contracts";
 
 export const useLatestsMints = () => {
   const provider = useProvider();
@@ -20,7 +20,14 @@ export const useLatestsMints = () => {
 
       console.log(events);
 
-      setMints(events.slice(0, 5).map((e) => ({ ...e.args, txHash: e.transactionHash, blockNr: e.blockNumber })));
+      setMints(
+        events
+          //Filter mints from forwarder
+          .filter((e) => e.args!.to !== L1Forwarder)
+          .slice(-5)
+          .reverse()
+          .map((e) => ({ ...e.args, txHash: e.transactionHash, blockNr: e.blockNumber }))
+      );
     };
     fetchLatestsMints();
   }, [provider]);

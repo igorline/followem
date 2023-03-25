@@ -33,13 +33,17 @@ export const ApeTile = ({ ape }: { ape: Ape }) => {
       <Flex>
         <Image src={ape.image} maxW="50%" />
         <Box w="4rem" />
-        <Flex
-          direction="column"
-          justify="space-between"
-          alignItems="center
-      "
-        >
+        <Flex direction="column" justify="space-between">
           <Text>The Bored Ape Yacht Club is a collection of 10,000 unique Bored Ape NFTs— unique digital collectibles living on the Ethereum blockchain.</Text>
+          <Flex>
+            <Text fontWeight="bold" alignItems="start." textAlign="start">
+              32 Minted |
+            </Text>
+
+            <Text fontWeight="cold" alignItems="start." textAlign="start">
+              6d 23h 59min
+            </Text>
+          </Flex>
         </Flex>
       </Flex>
       <Box h="2rem" />
