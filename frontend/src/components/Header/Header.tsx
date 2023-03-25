@@ -1,10 +1,12 @@
-import { Box, Flex, Text } from "@chakra-ui/react";
+import { Box, Flex, Text, Image } from "@chakra-ui/react";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+
+import followme from "./followme.svg";
 
 export const Header = () => {
   return (
     <Flex justifyContent="space-between">
-      <Text>Follow me</Text>
+      <Image src={followme}></Image>
       <Flex justifyContent="end" pt="2" px="4">
         <ConnectButton />
       </Flex>
