@@ -1,4 +1,8 @@
-import { calculateRelayerFee, chainIdToDomain, getChainData } from "@connext/nxtp-utils";
+import {
+  calculateRelayerFee,
+  chainIdToDomain,
+  getChainData,
+} from "@connext/nxtp-utils";
 import { BigNumber, ethers } from "ethers";
 import { useSigner } from "wagmi";
 import { Advertiser, BAYC, CampaignContract, L1Forwarder } from "../contracts";
@@ -7,21 +11,21 @@ import { Advertiser, BAYC, CampaignContract, L1Forwarder } from "../contracts";
 //optimism goerli
 const destinationDomain = "1735356532";
 
-
-
 const originDomain = "1735353714";
 
 export const useAd = () => {
   const { data: signer } = useSigner();
 
-  const executeAd = async (value: BigNumber) => {
-    const iface = new ethers.utils.Interface(["function mintApe(uint numberOfTokens) public payable"]);
+  const consumeAd = async (value: BigNumber) => {
+    const iface = new ethers.utils.Interface([
+      "function mintApe(uint numberOfTokens) public payable",
+    ]);
     //We mint just one ape at the time
     const calldata = iface.encodeFunctionData("mintApe", [1]);
     const contract = new ethers.Contract(
       L1Forwarder,
       [
-        " function executeAd(address target,bytes calldata _calldata,address l2CampaignContract,address advertiser,uint32 destinationDomain,uint256 relayerFee) external payable",
+        " function consumeAd(address target,bytes calldata _calldata,address l2CampaignContract,address advertiser,uint32 chainId,uint256 relayerFee) external payable",
       ],
       signer!
     );
@@ -30,10 +34,18 @@ export const useAd = () => {
 
     console.log("go relayer fee", relayerFee);
 
-    await contract.executeAd(BAYC, calldata, CampaignContract, Advertiser, destinationDomain, relayerFee, {
-      value: value.add(relayerFee),
-      gasLimit: 1000000,
-    });
+    await contract.consumeAd(
+      BAYC,
+      calldata,
+      CampaignContract,
+      Advertiser,
+      destinationDomain,
+      relayerFee,
+      {
+        value: value.add(relayerFee),
+        gasLimit: 1000000,
+      }
+    );
   };
-  return { executeAd };
+  return { consumeAd };
 };
