@@ -1,5 +1,6 @@
 import { Box, Flex, Heading } from "@chakra-ui/react";
 import { Header } from "../../components/Header/Header";
+import { ClaimRewards } from "../claim/ClaimRewards";
 import Apes from "./Apes.json";
 import { ApeTile } from "./ApeTile";
 import { LastMinterSection } from "./LastMinterSection";
@@ -15,6 +16,8 @@ const MintPage = () => {
           </Box>
         </Flex>
       </Box>
+      <Box h="1rem" />
+      <ClaimRewards />
       <Box h="1rem" />
       <LastMinterSection />
     </Box>
