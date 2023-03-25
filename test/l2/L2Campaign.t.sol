@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 import "forge-std/Test.sol";
 import "../../src/crosschainAdvertiser/l2/L2Campaign.sol";
-import "../../src/crosschainAdvertiser/AdHash.sol";
 
 contract L2CampaignTest is Test {
     L2Campaign public campaign;
@@ -32,20 +31,6 @@ contract L2CampaignTest is Test {
         //The connext bridge is allowed to set the write new entries to the campaign contract
         vm.prank(connextAddress);
         
-        bytes memory _calldata = abi.encodeWithSignature(
-            "mintApe(uint256)",
-            minter,
-            0
-        );
-
-        bytes32 expectedAdHash = getAdHash(
-            target,
-            _calldata,
-            address(campaign),
-            advertiser,
-            destinationDomain
-        );
-
         //Pretend that the ad was executed
         campaign.xReceive(
             0x0,
@@ -54,14 +39,13 @@ contract L2CampaignTest is Test {
             forwarderAddress,
             destinationDomain,
             abi.encode(
-                expectedAdHash,
                 advertiser
             )
         );
 
         vm.prank(advertiser);
         uint balanceBefore = address(advertiser).balance;
-        campaign.claim(expectedAdHash);
+        campaign.claim();
         uint balanceAfter = address(advertiser).balance;
         //Advertiser claimed his commission of 1 wei after he prooved that the minter minted token 0 on his behalf
         assert(balanceAfter == balanceBefore + commission);
