@@ -36,7 +36,7 @@ contract ForwarderTest is Test {
     uint256 relayerFee = 1 wei;
     uint256 commission = 1 wei;
 
-    event AdExecuted(bytes32 indexed adHash, address indexed advertiser);
+    event AdConsumed(address indexed target, address indexed adMaker, address indexed adTaker, address campaign);
 
     function setUp() public {
         connextMock = new ConnextMock();
@@ -77,9 +77,11 @@ contract ForwarderTest is Test {
         vm.startPrank(minter);
 
         vm.expectEmit(true, true, false, false);
-        emit AdExecuted(
-            0x481bc0d6a970ed8dbb8465c9e02f156980387f0a6a2693525e2fffc81cfb9944,
-            advertiser
+        emit AdConsumed(
+            address(bayc),
+            advertiser,
+            address(this),
+            address(campaign)
         );
 
         assertEq(bayc.balanceOf(address(this)), 0);
