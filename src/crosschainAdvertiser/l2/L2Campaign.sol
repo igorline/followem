@@ -19,6 +19,8 @@ contract L2Campaign is Ownable {
     uint256 public immutable deadline;
 
     mapping(bytes32 => address) claims;
+
+    mapping(address => uint) public balances;
     uint public claimableRewards;
 
     constructor(
@@ -71,6 +73,7 @@ contract L2Campaign is Ownable {
         );
         claims[adHash] = advertiser;
         claimableRewards += commission;
+        balances[advertiser] += commission;
     }
 
     function withdraw() external onlyOwner onlyAfter(deadline) {
@@ -92,9 +95,11 @@ contract L2Campaign is Ownable {
         claims[expectedAdHash] = address(0);
         // Reduce claimable rewards
         claimableRewards -= commission;
+        // Reduce balance of the claimer
+        balances[msg.sender] -= commission;
         // Send the reward to the sender
         // FIXME: https://consensys.net/diligence/blog/2019/09/stop-using-soliditys-transfer-now/
         payable(address(msg.sender)).transfer(commission);
     }
 }
-//forge verify-contract 0x9a183487C6650A2c44f279b79bE7B3a27D9F69ac L2Campaign KUG3QTVUKNTCH5DXEHQ5GY7XN1WMHPXWV7 --chain optimism-goerli --constructor-args-path constructor-args.txt
+//forge verify-contract 0x2674bd589DDD3FFa2c68c38c1901A55dFEe5fc1a L2Campaign KUG3QTVUKNTCH5DXEHQ5GY7XN1WMHPXWV7 --chain optimism-goerli --constructor-args-path constructor-args.txt
