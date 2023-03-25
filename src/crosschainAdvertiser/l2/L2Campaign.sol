@@ -21,21 +21,6 @@ contract L2Campaign is Ownable {
     mapping(bytes32 => address) claims;
     uint public claimableRewards;
 
-    event DEBUGXRECEIVE(
-        address expectedForwarder,
-        address actualForwarder,
-        address msgSender,
-        address connext
-    );
-
-    event DEBUGXRECEIVE2(
-        bytes32 _transferId,
-        uint256 _amount,
-        address _asset,
-        address _originSender,
-        uint32 _origin
-    );
-
     constructor(
         uint256 _commission,
         address _target,
@@ -58,9 +43,10 @@ contract L2Campaign is Ownable {
     }
 
     modifier onlySource(address _originSender, uint32 _origin) {
-        emit DEBUGXRECEIVE(l1Forwarder, msg.sender, _originSender, connext);
         require(
-            _originSender == l1Forwarder && msg.sender == connext,
+            //FIXME origin sender is not wokring as expected due to issues with connext op testnet
+            // _originSender == l1Forwarder && msg.sender == connext,
+            msg.sender == connext,
             "Expected original caller to be source contract on origin domain and this to be called by Connext"
         );
         _;
@@ -79,14 +65,6 @@ contract L2Campaign is Ownable {
         uint32 _origin,
         bytes memory _callData
     ) external onlySource(_originSender, _origin) returns (bytes memory) {
-        emit DEBUGXRECEIVE2(
-            _transferId,
-            _amount,
-            _asset,
-            _originSender,
-            _origin
-        );
-
         (bytes32 adHash, address advertiser) = abi.decode(
             _callData,
             (bytes32, address)
@@ -119,4 +97,4 @@ contract L2Campaign is Ownable {
         payable(address(msg.sender)).transfer(commission);
     }
 }
-//forge verify-contract 0x80090db34388C0327e7381af5B1791226318F41C L2Campaign KUG3QTVUKNTCH5DXEHQ5GY7XN1WMHPXWV7 --chain optimism-goerli --constructor-args-path constructor-args.txt
+//forge verify-contract 0x9a183487C6650A2c44f279b79bE7B3a27D9F69ac L2Campaign KUG3QTVUKNTCH5DXEHQ5GY7XN1WMHPXWV7 --chain optimism-goerli --constructor-args-path constructor-args.txt
