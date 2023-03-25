@@ -5,7 +5,7 @@ import followme from "./followme.svg";
 
 export const Header = () => {
   return (
-    <Flex justifyContent="space-between">
+    <Flex  justifyContent="space-between">
       <Image src={followme}></Image>
       <Flex justifyContent="end" pt="2" px="4">
         <ConnectButton />

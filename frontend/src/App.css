@@ -36,3 +36,8 @@
     transform: rotate(360deg);
   }
 }
+
+.identicon-circle {
+  border-radius: 50%;
+  display: inline-block;
+}
