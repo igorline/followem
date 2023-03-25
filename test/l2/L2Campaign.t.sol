@@ -23,7 +23,8 @@ contract L2CampaignTest is Test {
             0,
             forwarderAddress,
             connextAddress,
-            destinationDomain
+            destinationDomain,
+            bytes4(keccak256(bytes("mintApe(uint256)")))
         );
     }
      
@@ -39,6 +40,7 @@ contract L2CampaignTest is Test {
             forwarderAddress,
             destinationDomain,
             abi.encode(
+                bytes4(keccak256(bytes("mintApe(uint256)"))),
                 advertiser
             )
         );

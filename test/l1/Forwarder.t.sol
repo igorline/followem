@@ -61,7 +61,8 @@ contract ForwarderTest is Test {
             0,
             address(forwarder),
             connextMockAddress,
-            chainId
+            chainId,
+            sig
         );
     }
 

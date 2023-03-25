@@ -20,7 +20,8 @@ contract CampaignFactoryTest is Test {
         address indexed author,
         address campaign,
         uint256 commission,
-        uint256 totalReward
+        uint256 totalReward,
+        string signature
     );
 
     function setUp() public {
@@ -41,13 +42,15 @@ contract CampaignFactoryTest is Test {
             address(this),
             campaign,
             commission,
-            totalReward
+            totalReward,
+            "mintApe(uint256)"
         );
 
         campaignFactory.deployCampaign{value: totalReward}(
             commission,
             target,
-            0
+            0,
+            "mintApe(uint256)"
         );
 
         assertEq(address(campaign).balance, totalReward);
