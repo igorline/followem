@@ -24,4 +24,4 @@ contract DeployL2CampaignFactory is Script {
 //forge script script/L2CampaignFactory.s.sol:DeployL2CampaignFactory --broadcast --verify --rpc-url {$OPTIMISM_GOERLI_RPC_URL} --etherscan-api-key {$ETHERSCAN_OPTIMISM_GOERLI_API_KEY} -- --network--optimism-goerli
 //https://goerli-optimism.etherscan.io/address/0xd44f5dca05510b1c0b12896d8a8481f908fb2bd9
 
-//forge script script/L2CampaignFactory.s.sol:DeployL2CampaignFactory --broadcast --rpc-url https://polygon-mumbai.blockpi.network/v1/rpc/public - -- --network--mumbai
+
