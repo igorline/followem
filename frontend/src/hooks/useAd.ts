@@ -1,3 +1,4 @@
+import { calculateRelayerFee, chainIdToDomain, getChainData } from "@connext/nxtp-utils";
 import { BigNumber, ethers } from "ethers";
 import { useSigner } from "wagmi";
 import { Advertiser, BAYC, CampaignContract, L1Forwarder } from "../contracts";
@@ -6,8 +7,10 @@ import { Advertiser, BAYC, CampaignContract, L1Forwarder } from "../contracts";
 //optimism goerli
 const destinationDomain = "1735356532";
 
-//TODO use connext sdk to determine that fee
-const relayerFee = ethers.utils.parseEther("0.1");
+
+
+const originDomain = "1735353714";
+
 export const useAd = () => {
   const { data: signer } = useSigner();
 
@@ -22,6 +25,10 @@ export const useAd = () => {
       ],
       signer!
     );
+
+    const relayerFee = ethers.utils.parseEther("0.1");
+
+    console.log("go relayer fee", relayerFee);
 
     await contract.executeAd(BAYC, calldata, CampaignContract, Advertiser, destinationDomain, relayerFee, {
       value: value.add(relayerFee),

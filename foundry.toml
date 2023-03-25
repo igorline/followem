@@ -5,9 +5,11 @@ src = 'src'
 
 [rpc_endpoints]
 goerli = "${GOERLI_RPC_URL}"
+mumbai = "https://polygon-mumbai.blockpi.network/v1/rpc/public"
 optimism-goerli = "${OPTIMISM_GOERLI_RPC_URL}"
 
 [etherscan]
 goerli = {key = "${ETHERSCAN_API_KEY}"}
 optimism-goerli = {key = "${ETHERSCAN_OPTIMISM_GOERLI_API_KEY}", url = "https://goerli-optimism.etherscan.io"}
+
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config

@@ -1,6 +1,6 @@
 pragma solidity ^0.8.15;
 
-import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";
 import {getAdHash} from "../AdHash.sol";
 
 contract L2Campaign is Ownable {
@@ -13,12 +13,28 @@ contract L2Campaign is Ownable {
     // The address of the connext contract
     address public immutable connext;
     // The domain the campaign contract is deployed at
+    //TODO i think we can remove this
     uint32 public immutable originDomain;
     // Deadline after which the owner can withdraw the funds
     uint256 public immutable deadline;
 
     mapping(bytes32 => address) claims;
     uint public claimableRewards;
+
+    event DEBUGXRECEIVE(
+        address expectedForwarder,
+        address actualForwarder,
+        address msgSender,
+        address connext
+    );
+
+    event DEBUGXRECEIVE2(
+        bytes32 _transferId,
+        uint256 _amount,
+        address _asset,
+        address _originSender,
+        uint32 _origin
+    );
 
     constructor(
         uint256 _commission,
@@ -42,10 +58,9 @@ contract L2Campaign is Ownable {
     }
 
     modifier onlySource(address _originSender, uint32 _origin) {
+        emit DEBUGXRECEIVE(l1Forwarder, msg.sender, _originSender, connext);
         require(
-            _origin == originDomain &&
-                _originSender == l1Forwarder &&
-                msg.sender == connext,
+            _originSender == l1Forwarder && msg.sender == connext,
             "Expected original caller to be source contract on origin domain and this to be called by Connext"
         );
         _;
@@ -57,13 +72,21 @@ contract L2Campaign is Ownable {
     }
 
     function xReceive(
-        bytes32, // _transferId
-        uint256, // _amount
-        address, //  _asset
+        bytes32 _transferId,
+        uint256 _amount,
+        address _asset,
         address _originSender,
         uint32 _origin,
         bytes memory _callData
     ) external onlySource(_originSender, _origin) returns (bytes memory) {
+        emit DEBUGXRECEIVE2(
+            _transferId,
+            _amount,
+            _asset,
+            _originSender,
+            _origin
+        );
+
         (bytes32 adHash, address advertiser) = abi.decode(
             _callData,
             (bytes32, address)
@@ -77,7 +100,9 @@ contract L2Campaign is Ownable {
             address(this).balance > claimableRewards,
             "Not enough funds to withdraw"
         );
-        payable(address(msg.sender)).transfer((address(this).balance) - claimableRewards);
+        payable(address(msg.sender)).transfer(
+            (address(this).balance) - claimableRewards
+        );
     }
 
     // TODO: Implement batch claim
@@ -94,3 +119,4 @@ contract L2Campaign is Ownable {
         payable(address(msg.sender)).transfer(commission);
     }
 }
+//forge verify-contract 0x80090db34388C0327e7381af5B1791226318F41C L2Campaign KUG3QTVUKNTCH5DXEHQ5GY7XN1WMHPXWV7 --chain optimism-goerli --constructor-args-path constructor-args.txt
