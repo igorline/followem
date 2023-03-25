@@ -45,7 +45,7 @@ contract ConnextHandler is ICrosschainHandler {
         // the address of the campaignContract
         address l2CampaignContract,
         // The advertiser that should earn the reward
-        address advertiser,
+        bytes memory _calldata,
         // The chain id for campaign contract
         uint32 chainId
     ) external payable onlyCaller {
@@ -57,7 +57,7 @@ contract ConnextHandler is ICrosschainHandler {
             msg.sender, // _delegate: address that can revert or forceLocal on destination
             0, // _amount: 0 because no funds are being transferred
             0, // _slippage: can be anything between 0-10000 because no funds are being transferred
-            abi.encode(advertiser) // _callData: the encoded calldata to send
+            _calldata // _callData: the encoded calldata to send
         );
     }
 }
