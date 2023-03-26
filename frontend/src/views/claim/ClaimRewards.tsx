@@ -1,8 +1,9 @@
 import { Button, Flex, Text } from "@chakra-ui/react";
+import { ethers } from "ethers";
 import { useClaimRewards } from "../../hooks/useClaimRewards";
 
 export const ClaimRewards = () => {
-  const { claimable } = useClaimRewards();
+  const { claimable, claimRewards } = useClaimRewards();
   return (
     <Flex
       borderRadius="20px"
@@ -14,7 +15,7 @@ export const ClaimRewards = () => {
       <Text fontWeight="bold">MyRewards ⭐️</Text>
       <Flex alignItems="center">
         <Text fontSize="4xl">{claimable} ETH</Text>
-        <Button>Claim </Button>
+        <Button onClick={() => claimRewards()}>Claim </Button>
       </Flex>
     </Flex>
   );
