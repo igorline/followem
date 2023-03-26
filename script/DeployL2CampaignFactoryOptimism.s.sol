@@ -4,9 +4,9 @@ pragma solidity ^0.8.15;
 import "forge-std/Script.sol";
 import "../src/crosschainAdvertiser/l2/L2CampaignFactory.sol";
 
-contract DeployL2CampaignFactory is Script {
+contract DeployL2CampaignFactoryOptimism is Script {
     //
-    address constant l1Forwarder = 0x347b77ca840A4aD540371b9F9560f2f394BCcb0F;
+    address constant l1Forwarder = 0x3075fd855E0aB31D02cCed321F883B119cc24271;
     //Connext Optimism-Goerli
     address constant connext = 0x5Ea1bb242326044699C3d81341c5f535d5Af1504;
     //Domain Optimism-Goerli
@@ -21,7 +21,5 @@ contract DeployL2CampaignFactory is Script {
         vm.stopBroadcast();
     }
 }
-//forge script script/L2CampaignFactory.s.sol:DeployL2CampaignFactory --broadcast --verify --rpc-url {$OPTIMISM_GOERLI_RPC_URL} --etherscan-api-key {$ETHERSCAN_OPTIMISM_GOERLI_API_KEY} -- --network--optimism-goerli
-//https://goerli-optimism.etherscan.io/address/0xd44f5dca05510b1c0b12896d8a8481f908fb2bd9
-
-
+//forge script script/DeployL2CampaignFactoryOptimism.s.sol:DeployL2CampaignFactoryOptimism --broadcast --verify --rpc-url {$OPTIMISM_GOERLI_RPC_URL} --etherscan-api-key {$ETHERSCAN_OPTIMISM_GOERLI_API_KEY} -- --network--optimism-goerli
+//https://goerli-optimism.etherscan.io/address/0x3b41a4a44a9080937400cd40f3d33a78a99eeb25
