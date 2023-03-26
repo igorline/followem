@@ -10,6 +10,8 @@ optimism-goerli = "${OPTIMISM_GOERLI_RPC_URL}"
 
 [etherscan]
 goerli = {key = "${ETHERSCAN_API_KEY}"}
+mumbai = {key = "${MUMBAI_OPTIMISM_GOERLI_API_KEY}", url = "https://mumbai.polygonscan.com"}
 optimism-goerli = {key = "${ETHERSCAN_OPTIMISM_GOERLI_API_KEY}", url = "https://goerli-optimism.etherscan.io"}
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config
+

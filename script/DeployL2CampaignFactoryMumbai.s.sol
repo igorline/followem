@@ -21,7 +21,6 @@ contract DeployL2CampaignFactoryMumbai is Script {
         vm.stopBroadcast();
     }
 }
-//forge script script/L2CampaignFactory.s.sol:DeployL2CampaignFactory --broadcast --verify --rpc-url {$OPTIMISM_GOERLI_RPC_URL} --etherscan-api-key {$ETHERSCAN_OPTIMISM_GOERLI_API_KEY} -- --network--optimism-goerli
-//https://goerli-optimism.etherscan.io/address/0xd44f5dca05510b1c0b12896d8a8481f908fb2bd9
+//forge script script/DeployL2CampaignFactoryMumbai.s.sol:DeployL2CampaignFactoryMumbai --broadcast --verify --rpc-url https://polygon-mumbai.blockpi.network/v1/rpc/public --etherscan-api-key {$ETHERSCAN_OPTIMISM_GOERLI_API_KEY} -- --network--mumbai
 
-//forge script script/DeployL2CamapaignFactoryMumbai.s.sol:DeployL2CampaignFactoryMumbai --broadcast --rpc-url https://polygon-mumbai.blockpi.network/v1/rpc/public - -- --network--mumbai
+//forge verify-contract 0xB1e5C3f7898E46277EefAFa0E8732760E07ffe21 L2CampaignFactory M8HM4IYY4Z71HS8TC9BQNUAT3CN6XH77G7 --chain mumbai --constructor-args-path factory-args.txt
