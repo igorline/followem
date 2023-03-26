@@ -35,8 +35,9 @@ export const useClaimRewards = () => {
     }
     const contract = new ethers.Contract(CampaignContract, ["function claim() public payable"], signer!);
     const tx = await contract.claim();
-    await tx.wait();
+    console.log(tx);
     setclaimable("0");
+    return tx.hash;
   };
 
   return { claimable, claimRewards };
