@@ -6,7 +6,7 @@ import "../src/crosschainAdvertiser/l2/L2CampaignFactory.sol";
 
 contract DeployL2CampaignFactoryMumbai is Script {
     //
-    address constant l1Forwarder = 0x347b77ca840A4aD540371b9F9560f2f394BCcb0F;
+    address constant l1Forwarder = 0x3075fd855E0aB31D02cCed321F883B119cc24271;
     //Connext Mumbai
     address constant connext = 0x2334937846Ab2A3FCE747b32587e1A1A2f6EEC5a;
     //Domain Optimism-Goerli

@@ -73,7 +73,7 @@ contract L2Campaign is Ownable {
             (bytes4, address)
         );
         require(_selector == selector, "Invalid selector");
-        ++claimableRewards[advertiser];
+        ++uableRewards[advertiser];
         ++totalRewards;
     }
 
@@ -98,4 +98,4 @@ contract L2Campaign is Ownable {
         payable(address(msg.sender)).transfer(commission * rewardsCount);
     }
 }
-//forge verify-contract 0x2674bd589DDD3FFa2c68c38c1901A55dFEe5fc1a L2Campaign KUG3QTVUKNTCH5DXEHQ5GY7XN1WMHPXWV7 --chain optimism-goerli --constructor-args-path constructor-args.txt
+//forge verify-contract 0xc48ff12ED5275dbe8064eA39712118F59BF4b0ED L2Campaign KUG3QTVUKNTCH5DXEHQ5GY7XN1WMHPXWV7 --chain optimism-goerli --constructor-args-path constructor-args.txt
