@@ -23,7 +23,7 @@ export const useLatestsMints = () => {
       setMints(
         events
           //Filter mints from forwarder
-          .filter((e) => e.args!.to !== L1Forwarder)
+          .filter((e) => e.args!.from !== ethers.constants.AddressZero)
           .slice(-5)
           .reverse()
           .map((e) => ({ ...e.args, txHash: e.transactionHash, blockNr: e.blockNumber }))
