@@ -1,9 +1,23 @@
-import { Button, Flex, Text } from "@chakra-ui/react";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { Box, Button, Flex, Text } from "@chakra-ui/react";
 import { ethers } from "ethers";
+import { useState } from "react";
 import { useClaimRewards } from "../../hooks/useClaimRewards";
 
 export const ClaimRewards = () => {
   const { claimable, claimRewards } = useClaimRewards();
+
+  const [txHash, setTxHash] = useState<string | null>(null);
+
+  const onClaim = async () => {
+    setTxHash(null);
+    const txHash = await claimRewards();
+    setTxHash(txHash);
+  };
+
+  const goToEtherscan = () => {
+    window.open(`https://optimistic.etherscan.io/tx/${txHash}`, "_blank");
+  };
   return (
     <Flex
       borderRadius="20px"
@@ -15,8 +29,16 @@ export const ClaimRewards = () => {
       <Text fontWeight="bold">MyRewards ⭐️</Text>
       <Flex alignItems="center">
         <Text fontSize="4xl">{claimable} ETH</Text>
-        <Button onClick={() => claimRewards()}>Claim </Button>
+        <Box w="4" />
+        <Button backgroundColor="#DFCEBA" onClick={onClaim}>{txHash?"Claimed 🎉":"Claim" } </Button>
       </Flex>
+      {txHash && (
+        <Flex>
+          <Text>View Transaction</Text>
+          <Box w="4" />
+          <ExternalLinkIcon cursor="pointer" color="black" onClick={goToEtherscan} />
+        </Flex>
+      )}
     </Flex>
   );
 };
