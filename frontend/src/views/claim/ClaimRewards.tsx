@@ -35,7 +35,7 @@ export const ClaimRewards = () => {
       {txHash && (
         <Flex>
           <Text>View Transaction</Text>
-          <Box w="4" />
+          <Box w="2" />
           <ExternalLinkIcon cursor="pointer" color="black" onClick={goToEtherscan} />
         </Flex>
       )}
