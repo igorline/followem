@@ -73,7 +73,7 @@ contract L2Campaign is Ownable {
             (bytes4, address)
         );
         require(_selector == selector, "Invalid selector");
-        ++uableRewards[advertiser];
+        ++claimableRewards[advertiser];
         ++totalRewards;
     }
 
