@@ -18,7 +18,8 @@ contract L2CampaignFactory is Ownable {
         address campaign,
         uint256 commission,
         uint256 totalReward,
-        string signature
+        string signature,
+        uint256 activityCost
     );
 
     constructor(address _l1Caller, address _connext, uint32 _originDomain) {
@@ -32,28 +33,30 @@ contract L2CampaignFactory is Ownable {
     }
 
     function deployCampaign(
-        uint256 _commission,
-        address _target,
-        uint256 _deadline,
-        string memory _signature
+        uint256 commission,
+        address target,
+        uint256 deadline,
+        string memory signature,
+        uint256 activityCost
     ) external payable {
         L2Campaign campaign = new L2Campaign{value: msg.value}(
-            _commission,
-            _target,
-            _deadline,
+            commission,
+            target,
+            deadline,
             l1Caller,
             connext,
             originDomain,
-            bytes4(keccak256(bytes(_signature)))
+            bytes4(keccak256(bytes(signature)))
         );
 
         emit CampaignCreated(
-            _target,
+            target,
             msg.sender,
             address(campaign),
-            _commission,
+            commission,
             msg.value,
-            _signature
+            signature,
+            activityCost
         );
     }
 }
